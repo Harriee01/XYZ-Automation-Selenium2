@@ -17,9 +17,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <selenium.version>4.25.0</selenium.version>
-        <junit.version>5.10.2</junit.version>
+        <webdrivermanager.version>5.9.2</webdrivermanager.version>
+        <junit.version>5.10.3</junit.version>
         <allure.version>2.27.0</allure.version>
+        <assertj.version>3.26.3</assertj.version>
         <aspectj.version>1.9.22</aspectj.version>
+        <surefire.version>3.3.1</surefire.version>
 
 
     </properties>
@@ -78,6 +81,15 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- AspectJ Weaver for runtime bytecode weaving -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+
+
+
     </dependencies>
 
 
@@ -107,14 +119,6 @@
                         <include>**/*Tests.java</include>
                     </includes>
                 </configuration>
-                <dependencies>
-                    <!-- AspectJ Weaver for runtime bytecode weaving -->
-                    <dependency>
-                        <groupId>org.aspectj</groupId>
-                        <artifactId>aspectjweaver</artifactId>
-                        <version>${aspectj.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
