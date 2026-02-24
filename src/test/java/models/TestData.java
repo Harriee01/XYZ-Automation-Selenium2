@@ -1,4 +1,4 @@
-package com.xyz.models;
+package models;
 
 //Centralized test data repository for XYZ Bank test suite.
 
