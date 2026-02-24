@@ -69,4 +69,26 @@ public class ManagerTests extends BaseTest {
                 .doesNotContain(TestData.MSG_CUSTOMER_ADDED);
     }
 
+    //TC3 — Verify rejection when First Name contains special characters (@,#,$,%).
+    @Test
+    @Order(3)
+    @Story("Add Customer - Validation")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("TC3: Manager attempts to add customer with special chars in first name; expects rejection.")
+    void tc3_rejectSpecialCharsFirstName() {
+        AddCustomerPage addCustomerPage = new HomeLoginPage(driver)
+                .clickManagerLogin()
+                .clickAddCustomer();
+
+        String alertText = addCustomerPage.addCustomer(
+                TestData.CUSTOMER_INVALID_FIRST_NAME_SPECIAL,  // "Harriet@#$"
+                TestData.CUSTOMER_LAST_NAME,
+                TestData.CUSTOMER_POST_CODE
+        );
+
+        assertThat(alertText)
+                .as("Expected rejection for special character first name")
+                .doesNotContain(TestData.MSG_CUSTOMER_ADDED);
+    }
+
 }
