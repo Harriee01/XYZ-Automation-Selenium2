@@ -113,4 +113,28 @@ public class ManagerTests extends BaseTest {
                 .doesNotContain(TestData.MSG_CUSTOMER_ADDED);
     }
 
+    // TC5 — Verify new customer appears in Customers list immediately and is searchable by first name.
+    @Test
+    @Order(5)
+    @Story("Customer List")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("TC5: After adding a customer, they immediately appear in the Customers list; searchable by first name.")
+    void tc5_customerAppearsInListAndSearchable() {
+        // Step 1: Add the customer
+        ManagerHomePage managerHome = new HomeLoginPage(driver).clickManagerLogin();
+        managerHome.clickAddCustomer()
+                .addCustomer(TestData.CUSTOMER_FIRST_NAME, TestData.CUSTOMER_LAST_NAME, TestData.CUSTOMER_POST_CODE);
+
+        // Step 2: Navigate to Customers tab (re-using the same managerHome page object)
+        CustomersPage customersPage = managerHome.clickCustomers();
+
+        // Step 3: Search by first name
+        customersPage.searchCustomer(TestData.CUSTOMER_FIRST_NAME);
+
+        // Step 4: Assert the customer is visible in the filtered results
+        assertThat(customersPage.isCustomerVisible(TestData.CUSTOMER_FIRST_NAME))
+                .as("Customer '%s' should appear in list after being added", TestData.CUSTOMER_FIRST_NAME)
+                .isTrue();
+    }
+
 }
