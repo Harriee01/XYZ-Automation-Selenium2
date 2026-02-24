@@ -24,7 +24,7 @@ public class TableAssertions {
      */
     public static void assertTableContains(WebDriver driver, By tableBy, String searchText) {
         // Re-locate table after potential DOM refresh — avoids StaleElementReferenceException
-        WebElement table = WaitUtils.waitForVisibilityBy(driver, tableBy);
+        WebElement table = WaitUtils.waitForElementVisible(driver, tableBy);
 
         // Find all cells in the table — AngularJS renders ng-repeat rows dynamically
         List<WebElement> cells = table.findElements(By.tagName("td"));
@@ -47,7 +47,7 @@ public class TableAssertions {
      * @return count of <tr> elements inside <tbody>
      */
     public static int getRowCount(WebDriver driver, By tableBy) {
-        WebElement table = WaitUtils.waitForVisibilityBy(driver, tableBy);
+        WebElement table = WaitUtils.waitForElementVisible(driver, tableBy);
         List<WebElement> rows = table.findElements(By.cssSelector("tbody tr"));
         return rows.size();
     }
@@ -60,7 +60,7 @@ public class TableAssertions {
      * @param tableBy By locator for the table
      */
     public static void assertNoEditDeleteControls(WebDriver driver, By tableBy) {
-        WebElement table = WaitUtils.waitForVisibilityBy(driver, tableBy);
+        WebElement table = WaitUtils.waitForElementVisible(driver, tableBy);
 
         // Check for common edit/delete UI patterns: buttons, anchors with edit/delete text, inputs
         List<WebElement> buttons = table.findElements(By.tagName("button"));
