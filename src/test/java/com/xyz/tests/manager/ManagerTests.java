@@ -167,4 +167,41 @@ public class ManagerTests extends BaseTest {
                 .matches(".*\\d+.*");  // regex: contains at least one digit
     }
 
+    // TC7 — Verify it is impossible to create an account for a non-existent customer.
+
+    @Test
+    @Order(7)
+    @Story("Open Account - Validation")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("TC7: Open Account customer dropdown only contains real customers; no free-text injection possible.")
+    void tc7_cannotCreateAccountForNonExistentCustomer() {
+        OpenAccountPage openAccountPage = new HomeLoginPage(driver)
+                .clickManagerLogin()
+                .clickOpenAccount();
+
+        List<String> options = openAccountPage.getCustomerDropdownOptions();
+
+        // The dropdown should not be empty — real customers must be present
+        assertThat(options)
+                .as("Customer dropdown should have at least the default option plus real customers")
+                .hasSizeGreaterThan(1);
+
+        // No option should contain a fake/non-existent name
+        assertThat(options)
+                .as("Dropdown should not contain arbitrary fake customer names")
+                .noneMatch(opt -> opt.equalsIgnoreCase("FakeCustomer99"));
+
+        // All options should be either empty/placeholder OR known real names
+        // This verifies the dropdown is seeded from server data, not user-entered
+        assertThat(options)
+                .as("All dropdown options should be recognisable (placeholder or seeded customer names)")
+                .allMatch(opt -> opt.isBlank()
+                        || opt.contains("Harry")
+                        || opt.contains("Hermione")
+                        || opt.contains("Ron")
+                        || opt.contains("Albus")
+                        || opt.contains("Neville")
+                        || opt.contains(TestData.CUSTOMER_FIRST_NAME)  // may or may not be present
+                        || opt.equals("---"));               // placeholder option
+    }
 }
