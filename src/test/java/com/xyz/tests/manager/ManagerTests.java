@@ -91,4 +91,26 @@ public class ManagerTests extends BaseTest {
                 .doesNotContain(TestData.MSG_CUSTOMER_ADDED);
     }
 
+    //TC4 — Verify form rejects a Post Code with invalid characters (special chars).
+    @Test
+    @Order(4)
+    @Story("Add Customer - Validation")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("TC4: Manager attempts to add customer with special-character post code; expects rejection.")
+    void tc4_rejectInvalidPostCode() {
+        AddCustomerPage addCustomerPage = new HomeLoginPage(driver)
+                .clickManagerLogin()
+                .clickAddCustomer();
+
+        String alertText = addCustomerPage.addCustomer(
+                TestData.CUSTOMER_FIRST_NAME,
+                TestData.CUSTOMER_LAST_NAME,
+                TestData.CUSTOMER_INVALID_POST_CODE  // "GH!@#$%"
+        );
+
+        assertThat(alertText)
+                .as("Expected rejection for invalid post code with special characters")
+                .doesNotContain(TestData.MSG_CUSTOMER_ADDED);
+    }
+
 }
