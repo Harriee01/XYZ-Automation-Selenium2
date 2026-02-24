@@ -1,5 +1,6 @@
 package com.xyz.utils;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -51,9 +52,12 @@ public class WaitUtils {
     /**
      * Wait until an alert is present.
      * The app uses window.alert() for "Customer added successfully" feedback.
+     *
+     * @return
      */
-//    public static void waitForAlert(WebDriver driver) {
-//        defaultWait(driver).until(ExpectedConditions.alertIsPresent());
-//    }
+    public static Alert waitForAlert(WebDriver driver) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TestData.DEFAULT_TIMEOUT_SECONDS));
+        return wait.until(ExpectedConditions.alertIsPresent());
+    }
 
 }
