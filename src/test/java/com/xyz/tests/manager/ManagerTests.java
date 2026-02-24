@@ -45,4 +45,28 @@ public class ManagerTests extends BaseTest {
                 .as("Expected success alert when adding valid customer")
                 .contains(TestData.MSG_CUSTOMER_ADDED);
     }
+
+    //TC2 — Verify the form rejects a First Name containing numeric characters.
+    @Test
+    @Order(2)
+    @Story("Add Customer - Validation")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("TC2: Manager attempts to add customer with numeric first name; expects rejection (no success).")
+    void tc2_rejectNumericFirstName() {
+        AddCustomerPage addCustomerPage = new HomeLoginPage(driver)
+                .clickManagerLogin()
+                .clickAddCustomer();
+
+        String alertText = addCustomerPage.addCustomer(
+                TestData.CUSTOMER_INVALID_FIRST_NAME_NUMERIC,  // "Harriet123"
+                TestData.CUSTOMER_LAST_NAME,
+                TestData.CUSTOMER_POST_CODE
+        );
+
+        // The alert should NOT say customer was added successfully
+        assertThat(alertText)
+                .as("Expected rejection for numeric first name but got success message")
+                .doesNotContain(TestData.MSG_CUSTOMER_ADDED);
+    }
+
 }
