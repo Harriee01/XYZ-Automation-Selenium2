@@ -18,4 +18,17 @@ public abstract class BaseTest {
 
     protected WebDriver driver;
 
+    //Runs BEFORE each individual @Test method
+    @BeforeEach
+    void setUp() {
+        // Create ChromeDriver via factory — headless if -Dheadless=true
+        driver = DriverFactory.createChromeDriver();
+
+
+        // Maximizing ensures consistent element visibility across machines.
+        driver.manage().window().maximize();
+
+        // Navigate to the app's login page
+        driver.get(TestData.BASE_URL);
+    }
 }
