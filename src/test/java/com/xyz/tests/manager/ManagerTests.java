@@ -137,4 +137,34 @@ public class ManagerTests extends BaseTest {
                 .isTrue();
     }
 
+    //TC6 — Verify Manager can create a Dollar account for an existing customer;
+    //     confirmation alert contains account details.
+
+    @Test
+    @Order(6)
+    @Story("Open Account")
+    @Severity(SeverityLevel.BLOCKER)
+    @Description("TC6: Manager creates a Dollar account for an existing customer; alert confirms with account number.")
+    void tc6_createDollarAccountForExistingCustomer() {
+        OpenAccountPage openAccountPage = new HomeLoginPage(driver)
+                .clickManagerLogin()
+                .clickOpenAccount();
+
+        String alertText = openAccountPage.openAccount(
+                TestData.EXISTING_CUSTOMER_NAME,  // "Harry Potter"
+                TestData.CURRENCY_DOLLAR
+        );
+
+        // Alert should confirm account creation and include an account number
+        assertThat(alertText)
+                .as("Expected account creation confirmation alert")
+                .contains(TestData.MSG_ACCOUNT_CREATED);
+
+        // Verify the alert also contains a numeric account number (not just text)
+        // Account numbers are auto-generated integers (e.g. "1004")
+        assertThat(alertText)
+                .as("Alert should contain numeric account number")
+                .matches(".*\\d+.*");  // regex: contains at least one digit
+    }
+
 }
