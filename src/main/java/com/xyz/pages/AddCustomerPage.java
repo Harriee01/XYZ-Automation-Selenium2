@@ -9,7 +9,7 @@ import org.openqa.selenium.support.FindBy;
 //Page Object for Add Customer form.
 // * Handles customer creation with validation.
 
-public class AddCustomerPage {
+public class AddCustomerPage extends BasePage {
 
 
     // First Name input - has id="firstName"
