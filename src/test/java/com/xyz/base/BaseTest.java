@@ -31,4 +31,32 @@ public abstract class BaseTest {
         // Navigate to the app's login page
         driver.get(TestData.BASE_URL);
     }
+
+    //uns AFTER each @Test method — even if the test throws an exception
+
+    @AfterEach
+    void tearDown() {
+        if (driver != null) {
+            // Attach screenshot to Allure report on failure for easy debugging
+            takeScreenshotForAllure();
+            driver.quit();  // always quit — prevents orphaned chromedriver.exe processes
+        }
+
+        //Captures a screenshot and attaches it to the current Allure test result.
+        protected void takeScreenshotForAllure() {
+            try {
+                byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+                // Allure.addAttachment streams the bytes into the report
+                Allure.addAttachment("Screenshot", "image/png",
+                        new ByteArrayInputStream(screenshot), ".png");
+            } catch (Exception e) {
+                // Don't fail the test because of a screenshot failure
+                // Log to stderr for CI visibility but swallow exception
+                System.err.println("[BaseTest] Screenshot capture failed: " + e.getMessage());
+            }
+        }
+
+    }
+
+
 }
