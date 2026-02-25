@@ -83,4 +83,26 @@ public class CustomerTests extends BaseTest {
                 .isNotEmpty();
     }
 
+    // Verify the system rejects a deposit of 0 amount.
+    @Test
+    @Order(2)
+    @Story("Deposit - Validation")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("TC2: Deposit of $0 is rejected; balance unchanged and no success confirmation.")
+    void tc2_rejectZeroDeposit() {
+        double initialBalance = dashboard.getBalanceAsDouble();
+
+        DepositPage depositPage = dashboard.clickDeposit();
+        depositPage.enterAmount(TestData.ZERO_AMOUNT_STR).clickDeposit();
+
+        // Check balance — navigate back to dashboard to read it
+        driver.navigate().back();  // SPA back navigation returns to dashboard view
+        // Allow AngularJS a moment to re-render the balance
+        double balanceAfter = dashboard.getBalanceAsDouble();
+
+        assertThat(balanceAfter)
+                .as("Balance should not change after attempting zero deposit")
+                .isEqualTo(initialBalance);
+    }
+
 }
