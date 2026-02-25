@@ -62,12 +62,12 @@ jobs:
             echo "✅ Pipeline PASSED"
           fi
 
-      # Optional: Slack notification
+      # Slack notification
       - name: Notify Slack on Failure
         if: failure()
         uses: slackapi/slack-github-action@v1
         with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
           payload: |
             {
               "text": "❌ Selenium Tests Failed",
