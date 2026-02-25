@@ -1,5 +1,6 @@
 package com.xyz.pages;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -29,6 +30,7 @@ public class CustomerSelectPage extends BasePage {
      * Select customer by visible text
      * @param customerName full name as "FirstName LastName"
      */
+    @Step("Select customer: {customerName}")
     public void selectCustomer(String customerName) {
 
         wait.until(d -> customerDropdown.isDisplayed());
@@ -40,6 +42,7 @@ public class CustomerSelectPage extends BasePage {
      * Select customer by index
      * @param index dropdown index (0 for first customer)
      */
+    @Step("Select customer by index: {index}")
     public void selectCustomerByIndex(int index) {
 
         wait.until(d -> customerDropdown.isDisplayed());
@@ -51,6 +54,7 @@ public class CustomerSelectPage extends BasePage {
      * Click Login button
      * @return CustomerDashboardPage instance
      */
+    @Step("Click Login button")
     public CustomerDashboardPage clickLogin() {
 
         wait.until(d -> loginBtn.isEnabled());
@@ -63,8 +67,8 @@ public class CustomerSelectPage extends BasePage {
      * @param customerName customer name to select
      * @return CustomerDashboardPage
      */
-    public CustomerDashboardPage loginAsCustomer(String customerName) {
-
+    @Step("Login as customer: {customerName}")
+    public CustomerDashboardPage loginAs(String customerName) {
         selectCustomer(customerName);
         return clickLogin();
     }

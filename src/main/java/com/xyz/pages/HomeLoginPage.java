@@ -1,5 +1,6 @@
 package com.xyz.pages;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -30,9 +31,8 @@ public class HomeLoginPage extends BasePage {
      * Click Bank Manager Login button
      * @return ManagerHomePage instance
      */
-
-    public ManagerHomePage clickBankManagerLogin() {
-
+    @Step("Click Bank Manager Login button")
+    public ManagerHomePage clickManagerLogin() {
         wait.until(d -> bankManagerLoginBtn.isDisplayed() && bankManagerLoginBtn.isEnabled());
         bankManagerLoginBtn.click();
         // Return new instance of ManagerHomePage
@@ -43,6 +43,7 @@ public class HomeLoginPage extends BasePage {
       * Click Customer Login button
      * @return CustomerSelectPage instance
      */
+    @Step("Click Customer Login button")
     public CustomerSelectPage clickCustomerLogin() {
         wait.until(d -> customerLoginBtn.isDisplayed() && customerLoginBtn.isEnabled());
         customerLoginBtn.click();
@@ -53,6 +54,7 @@ public class HomeLoginPage extends BasePage {
     /**
      * Navigate to home page
      */
+    @Step("Navigate to home page")
     public void goToHome() {
 
         wait.until(d -> homeBtn.isDisplayed());

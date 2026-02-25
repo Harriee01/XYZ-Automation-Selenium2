@@ -10,7 +10,8 @@ import org.openqa.selenium.support.FindBy;
 public class CustomerDashboardPage extends BasePage {
 
     // Welcome message with customer name
-    @FindBy(css = ".fontBig.ng-binding")
+    // Converted from CSS to XPath for AngularJS ng-binding compatibility
+    @FindBy(xpath = "//span[@class='fontBig ng-binding']")
     private WebElement welcomeMessage;
 
     // Account number dropdown
@@ -18,23 +19,28 @@ public class CustomerDashboardPage extends BasePage {
     private WebElement accountSelect;
 
     // Balance display
-    @FindBy(css = ".ng-binding:nth-child(2)")
+    // Converted from CSS :nth-child(2) to XPath for explicit targeting
+    @FindBy(xpath = "//span[contains(@class, 'ng-binding')][position()=2]")
     private WebElement balanceDisplay;
 
     // Currency display
-    @FindBy(css = ".ng-binding:nth-child(3)")
+    // Converted from CSS :nth-child(3) to XPath for explicit targeting
+    @FindBy(xpath = "//span[contains(@class, 'ng-binding')][position()=3]")
     private WebElement currencyDisplay;
 
     // Transactions button
-    @FindBy(css = "button[ng-click='transactions()']")
+    // Converted from CSS to XPath for better AngularJS element matching
+    @FindBy(xpath = "//button[@ng-click='transactions()']")
     private WebElement transactionsBtn;
 
     // Deposit button
-    @FindBy(css = "button[ng-click='deposit()']")
+    // Converted from CSS to XPath for robust element identification
+    @FindBy(xpath = "//button[@ng-click='deposit()']")
     private WebElement depositBtn;
 
-    // Withdraw button
-    @FindBy(css = "button[ng-click='withdrawl()']")
+    // Withdraw button - note the typo 'withdrawl' matches the actual app HTML
+    // Converted from CSS to XPath for AngularJS compatibility
+    @FindBy(xpath = "//button[@ng-click='withdrawl()']")
     private WebElement withdrawBtn;
 
     public CustomerDashboardPage(WebDriver driver) {
@@ -45,6 +51,7 @@ public class CustomerDashboardPage extends BasePage {
      * Get welcome message text
      * @return String welcome message
      */
+    @Step("Get welcome message")
     public String getWelcomeMessage() {
         wait.until(d -> welcomeMessage.isDisplayed());
         String message = welcomeMessage.getText();
@@ -53,10 +60,11 @@ public class CustomerDashboardPage extends BasePage {
     }
 
     /**
-     * Get current account balance
+     * Get current account balance as double
      * @return double current balance
      */
-    public double getBalance() {
+    @Step("Get current balance")
+    public double getBalanceAsDouble() {
         wait.until(d -> balanceDisplay.isDisplayed());
         // Balance text might have currency symbol, extract number
         String balanceText = balanceDisplay.getText().replaceAll("[^0-9.-]", "");
@@ -69,6 +77,7 @@ public class CustomerDashboardPage extends BasePage {
      * Click Transactions button
      * @return TransactionsPage instance
      */
+    @Step("Click Transactions button")
     public TransactionsPage clickTransactions() {
 
         wait.until(d -> transactionsBtn.isEnabled());
@@ -80,6 +89,7 @@ public class CustomerDashboardPage extends BasePage {
      * Click Deposit button
      * @return DepositPage instance
      */
+    @Step("Click Deposit button")
     public DepositPage clickDeposit() {
 
         wait.until(d -> depositBtn.isEnabled());
@@ -91,6 +101,7 @@ public class CustomerDashboardPage extends BasePage {
      * Click Withdraw button
      * @return WithdrawPage instance
      */
+    @Step("Click Withdraw button")
     public WithdrawPage clickWithdraw() {
 
         wait.until(d -> withdrawBtn.isEnabled());
@@ -102,6 +113,7 @@ public class CustomerDashboardPage extends BasePage {
      * Select account by index
      * @param index account index
      */
+    @Step("Select account at index: {index}")
     public void selectAccount(int index) {
 
         wait.until(d -> accountSelect.isDisplayed());

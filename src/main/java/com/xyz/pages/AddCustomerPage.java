@@ -1,6 +1,7 @@
 package com.xyz.pages;
 
 import com.xyz.utils.AlertHandler;
+import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -36,6 +37,7 @@ public class AddCustomerPage extends BasePage {
      * Enter first name in the form
      * @param firstName customer's first name
      */
+    @Step("Enter first name: {firstName}")
     public void enterFirstName(String firstName) {
 
         wait.until(d -> firstNameInput.isDisplayed());
@@ -47,6 +49,7 @@ public class AddCustomerPage extends BasePage {
      * Enter last name in the form
      * @param lastName customer's last name
      */
+    @Step("Enter last name: {lastName}")
     public void enterLastName(String lastName) {
 
         wait.until(d -> lastNameInput.isDisplayed());
@@ -58,6 +61,7 @@ public class AddCustomerPage extends BasePage {
      * Enter post code in the form
      * @param postCode customer's post code
      */
+    @Step("Enter post code: {postCode}")
     public void enterPostCode(String postCode) {
 
         wait.until(d -> postCodeInput.isDisplayed());
@@ -69,6 +73,7 @@ public class AddCustomerPage extends BasePage {
      * Click Add Customer button and handle alert
      * @return String alert message
      */
+    @Step("Click Add Customer button")
     public String clickAddCustomer() {
 
         wait.until(d -> addCustomerBtn.isEnabled());
@@ -89,6 +94,7 @@ public class AddCustomerPage extends BasePage {
      * @param postCode customer's post code
      * @return String alert message
      */
+    @Step("Add customer: {firstName} {lastName} (PostCode: {postCode})")
     public String addCustomer(String firstName, String lastName, String postCode) {
 
         enterFirstName(firstName);

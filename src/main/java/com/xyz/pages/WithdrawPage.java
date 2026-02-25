@@ -10,7 +10,8 @@ import org.openqa.selenium.support.FindBy;
 public class WithdrawPage extends BasePage {
 
     // Amount input field
-    @FindBy(css = "input[ng-model='amount']")
+    // Converted from CSS to XPath for AngularJS ng-model attribute matching
+    @FindBy(xpath = "//input[@ng-model='amount']")
     private WebElement amountInput;
 
     // Withdraw button
@@ -22,7 +23,8 @@ public class WithdrawPage extends BasePage {
     private WebElement backBtn;
 
     // Success/Error message
-    @FindBy(css = ".error.ng-binding")
+    // Converted from CSS to XPath for better AngularJS error class handling
+    @FindBy(xpath = "//span[@class='error ng-binding']")
     private WebElement messageSpan;
 
     public WithdrawPage(WebDriver driver) {
@@ -30,11 +32,23 @@ public class WithdrawPage extends BasePage {
     }
 
     /**
-     * Enter withdrawal amount
-     * @param amount amount to withdraw
+     * Enter withdrawal amount as string
+     * @param amount amount to withdraw as string
+     */
+    @Step("Enter withdrawal amount: {amount}")
+    public void enterAmount(String amount) {
+        // Overload accepting String for convenience — handles form input naturally
+        wait.until(d -> amountInput.isDisplayed());
+        amountInput.clear();
+        amountInput.sendKeys(amount);
+    }
+
+    /**
+     * Enter withdrawal amount as double
+     * @param amount amount to withdraw as double
      */
     public void enterAmount(double amount) {
-
+        // Original method accepting double
         wait.until(d -> amountInput.isDisplayed());
         amountInput.clear();
         amountInput.sendKeys(String.valueOf(amount));
@@ -44,6 +58,7 @@ public class WithdrawPage extends BasePage {
      * Click Withdraw button
      * @return String message from span or alert
      */
+    @Step("Click Withdraw button")
     public String clickWithdraw() {
 
         wait.until(d -> withdrawBtn.isEnabled());
@@ -76,12 +91,24 @@ public class WithdrawPage extends BasePage {
     }
 
     /**
-     * Complete withdrawal operation
-     * @param amount amount to withdraw
+     * Complete withdrawal operation with amount as string
+     * @param amount amount to withdraw as string
+     * @return String result message
+     */
+    @Step("Withdraw amount: {amount}")
+    public String withdraw(String amount) {
+        // Overload accepting String for test convenience
+        enterAmount(amount);
+        return clickWithdraw();
+    }
+
+    /**
+     * Complete withdrawal operation with amount as double
+     * @param amount amount to withdraw as double
      * @return String result message
      */
     public String withdraw(double amount) {
-
+        // Original method accepting double
         enterAmount(amount);
         return clickWithdraw();
     }

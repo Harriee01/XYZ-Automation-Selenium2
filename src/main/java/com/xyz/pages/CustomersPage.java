@@ -16,15 +16,18 @@ public class CustomersPage extends BasePage {
 
 
     // Search input field
-    @FindBy(css = "input[ng-model='searchCustomer']")
+    // Converted from CSS to XPath for better readability in AngularJS dynamic structures
+    @FindBy(xpath = "//input[@ng-model='searchCustomer']")
     private WebElement searchInput;
 
     // Customers table
-    @FindBy(css = ".table.table-bordered.table-striped")
+    // Converted from CSS to XPath para AngularJS compatibility
+    @FindBy(xpath = "//table[contains(@class, 'table-bordered') and contains(@class, 'table-striped')]")
     private WebElement customersTable;
 
     // Delete buttons in table
-    @FindBy(css = "button[ng-click='deleteCust(cust)']")
+    // Converted from CSS to XPath for robust element identification
+    @FindBy(xpath = "//button[@ng-click='deleteCust(cust)']")
     private List<WebElement> deleteButtons;
 
     public CustomersPage(WebDriver driver) {
@@ -35,6 +38,7 @@ public class CustomersPage extends BasePage {
      * Search for customer by first name
      * @param firstName first name to search
      */
+    @Step("Search customer by first name: {firstName}")
     public void searchCustomer(String firstName) {
 
         wait.until(d -> searchInput.isDisplayed());
@@ -90,6 +94,17 @@ public class CustomersPage extends BasePage {
         return getAllCustomers().stream()
                 .anyMatch(c -> c.firstName().equals(firstName) &&
                         c.lastName().equals(lastName));
+    }
+
+    /**
+     * Check if customer is visible in the table (searches all customers)
+     * @param firstName customer first name to search for
+     * @return boolean true if customer found in current view
+     */
+    @Step("Check if customer is visible: {firstName}")
+    public boolean isCustomerVisible(String firstName) {
+        return getAllCustomers().stream()
+                .anyMatch(c -> c.firstName().contains(firstName));
     }
 
     /**

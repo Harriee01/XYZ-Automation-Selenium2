@@ -37,4 +37,37 @@ public class AlertHandler {
         return text;
     }
 
+    /**
+     * Waits for alert and gets its text without accepting (for inspection).
+     * Note: Alert will still be present after this call — must be accepted/dismissed later.
+     *
+     * @param driver the current WebDriver session
+     * @return the alert message text
+     */
+    public static String getAlertText(WebDriver driver) {
+        // Wait for alert to appear
+        try {
+            WaitUtils.waitForAlert(driver);
+            Alert alert = driver.switchTo().alert();
+            return alert.getText();
+        } catch (Exception e) {
+            // No alert present — return empty string for graceful handling
+            return "";
+        }
+    }
+
+    /**
+     * Accepts (clicks OK on) the currently displayed alert.
+     * Use this after capturing alert text if you called getAlertText() separately.
+     *
+     * @param driver the current WebDriver session
+     */
+    public static void acceptAlert(WebDriver driver) {
+        try {
+            Alert alert = driver.switchTo().alert();
+            alert.accept();  // Dismiss alert by clicking OK
+        } catch (Exception e) {
+            // No alert present — safe to continue (may have been auto-dismissed)
+        }
+    }
 }

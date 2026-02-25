@@ -20,7 +20,7 @@ public class CustomerTests extends BaseTest {
 
     @BeforeEach
     @Override
-    void setUp() {
+    public void setUp() {
         super.setUp();  // creates driver, maximises, navigates to BASE_URL
 
         // Step 1: Open a fresh account for Harry Potter as Manager

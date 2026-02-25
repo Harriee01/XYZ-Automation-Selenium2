@@ -16,8 +16,12 @@ import java.util.stream.Collectors;
 
 public class TransactionsPage extends BasePage {
 
+    // Locator constant for table — used in assertions and test validation
+    public static final By TRANSACTION_TABLE_BY = By.xpath("//table[contains(@class, 'table-bordered')]");
+
     // Transactions table
-    @FindBy(css = ".table.table-bordered")
+    // Converted from CSS to XPath for robust table element identification
+    @FindBy(xpath = "//table[contains(@class, 'table-bordered')]")
     private WebElement transactionsTable;
 
     // Reset button
@@ -43,6 +47,7 @@ public class TransactionsPage extends BasePage {
      * Get all transactions as list of Transaction objects
      * @return List<Transaction> containing all transactions
      */
+    @Step("Get all transactions")
     public List<Transaction> getAllTransactions() {
 
         wait.until(d -> transactionsTable.isDisplayed());
@@ -72,6 +77,7 @@ public class TransactionsPage extends BasePage {
      * @param type "Credit" or "Debit"
      * @return List<Transaction> filtered transactions
      */
+    @Step("Get transactions by type: {type}")
     public List<Transaction> getTransactionsByType(String type) {
         return getAllTransactions().stream()
                 .filter(t -> t.type().equalsIgnoreCase(type))
@@ -81,6 +87,7 @@ public class TransactionsPage extends BasePage {
     /**
      * Click Reset button to clear filters
      */
+    @Step("Click Reset button")
     public void clickReset() {
 
         wait.until(d -> resetBtn.isEnabled());
@@ -105,6 +112,7 @@ public class TransactionsPage extends BasePage {
      * @param startDate start date in yyyy-MM-dd format
      * @param endDate end date in yyyy-MM-dd format
      */
+    @Step("Filter transactions by date range: {startDate} to {endDate}")
     public void filterByDateRange(String startDate, String endDate) {
 
         wait.until(d -> startDateInput.isDisplayed() && endDateInput.isDisplayed());
@@ -132,6 +140,41 @@ public class TransactionsPage extends BasePage {
         // Verify there are no buttons in the table rows
         List<WebElement> buttons = transactionsTable.findElements(By.tagName("button"));
         return buttons.isEmpty();
+    }
+
+    /**
+     * Check if table is displayed
+     * @return boolean true if table is visible
+     */
+    public boolean isTableDisplayed() {
+        try {
+            return wait.until(d -> transactionsTable.isDisplayed());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get table column headers
+     * @return List<String> of header texts
+     */
+    public java.util.List<String> getTableHeaders() {
+        wait.until(d -> transactionsTable.isDisplayed());
+        // Get header row (first tr)
+        WebElement headerRow = transactionsTable.findElement(By.tagName("thead"));
+        List<WebElement> headers = headerRow.findElements(By.tagName("th"));
+        return headers.stream()
+                .map(WebElement::getText)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Check if a transaction of given type exists
+     * @param type "Credit" or "Debit"
+     * @return boolean true if at least one transaction of that type exists
+     */
+    public boolean hasTransactionOfType(String type) {
+        return getTransactionsByType(type).size() > 0;
     }
 
     /**

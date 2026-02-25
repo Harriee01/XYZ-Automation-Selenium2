@@ -1,5 +1,6 @@
 package com.xyz.pages;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -7,21 +8,11 @@ import org.openqa.selenium.support.FindBy;
 //Page Object for Bank Manager Home page.
 // * Contains navigation buttons for manager functions.
 
-public class ManagerHomePage extends BasePage{
+public class ManagerHomePage extends BasePage {
 
-
-
-    // Add Customer button
+    // Add Customer button — click to navigate to AddCustomerPage
     @FindBy(className = "btn-lg")
     private WebElement addCustomerBtn;
-
-    // Open Account button
-    @FindBy(className = "btn-lg")
-    private WebElement openAccountBtn; // Note: Same class, will need to differentiate by position
-
-    // Customers button
-    @FindBy(className = "btn-lg")
-    private WebElement customersBtn; // Note: Same class, will need to differentiate by position
 
     public ManagerHomePage(WebDriver driver) {
         super(driver);
@@ -31,9 +22,9 @@ public class ManagerHomePage extends BasePage{
      * Click Add Customer button
      * @return AddCustomerPage instance
      */
+    @Step("Click Add Customer button")
     public AddCustomerPage clickAddCustomer() {
-
-        // Wait for all buttons to be present, then click first one (Add Customer)
+        // Wait for button to be displayed and enabled before clicking
         wait.until(d -> addCustomerBtn.isDisplayed());
         addCustomerBtn.click();
 
@@ -44,6 +35,7 @@ public class ManagerHomePage extends BasePage{
      * Click Open Account button
      * @return OpenAccountPage instance
      */
+    @Step("Click Open Account button")
     public OpenAccountPage clickOpenAccount() {
 
         // Click second button (Open Account) - using findElements approach
@@ -56,6 +48,7 @@ public class ManagerHomePage extends BasePage{
      * Click Customers button
      * @return CustomersPage instance
      */
+    @Step("Click Customers button")
     public CustomersPage clickCustomers() {
 
         // Click third button (Customers)
@@ -69,7 +62,8 @@ public class ManagerHomePage extends BasePage{
      * @return String header text
      */
     public String getHeaderText() {
-        WebElement header = driver.findElement(org.openqa.selenium.By.cssSelector(".mainHeading"));
+        // Converted from CSS to XPath for better class-based element matching
+        WebElement header = driver.findElement(org.openqa.selenium.By.xpath("//h1[contains(@class, 'mainHeading')]"));
         return wait.until(d -> header.getText());
     }
 

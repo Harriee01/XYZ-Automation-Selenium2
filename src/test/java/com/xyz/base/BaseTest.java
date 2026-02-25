@@ -20,7 +20,7 @@ public abstract class BaseTest {
 
     //Runs BEFORE each individual @Test method
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         // Create ChromeDriver via factory — headless if -Dheadless=true
         driver = DriverFactory.createChromeDriver();
 
@@ -36,24 +36,20 @@ public abstract class BaseTest {
 
     @AfterEach
     void tearDown() {
-        if (driver != null) {
-            // Attach screenshot to Allure report on failure for easy debugging
-            takeScreenshotForAllure();
-            driver.quit();  // always quit — prevents orphaned chromedriver.exe processes
+        // attach a final screenshot for post-test inspection in Allure
+
+        try {
+            if (driver instanceof TakesScreenshot) {
+                byte[] png = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+                Allure.getLifecycle().addAttachment("Final screenshot", "image/png", "png", png);
+            }
+        } catch (Exception ignored) {
+            // Best-effort only; never block teardown
         }
 
-        //Captures a screenshot and attaches it to the current Allure test result.
-        protected void takeScreenshotForAllure() {
-            try {
-                byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-                // Allure.addAttachment streams the bytes into the report
-                Allure.addAttachment("Screenshot", "image/png",
-                        new ByteArrayInputStream(screenshot), ".png");
-            } catch (Exception e) {
-                // Don't fail the test because of a screenshot failure
-                // Log to stderr for CI visibility but swallow exception
-                System.err.println("[BaseTest] Screenshot capture failed: " + e.getMessage());
-            }
+        // Always quit to release resources
+        if (driver != null) {
+            driver.quit();
         }
 
     }
