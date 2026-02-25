@@ -3,11 +3,18 @@ package com.xyz.pages;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import io.qameta.allure.Step;
 
 //Page Object for Customer Dashboard.
 // * Shows account overview and navigation to transactions/deposit/withdraw
 
-public class CustomerDashboardPage extends BasePage {
+public class CustomerDashboardPage {
+
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected WebDriverWait longWait;
 
     // Welcome message with customer name
     // Converted from CSS to XPath for AngularJS ng-binding compatibility
@@ -22,11 +29,6 @@ public class CustomerDashboardPage extends BasePage {
     // Converted from CSS :nth-child(2) to XPath for explicit targeting
     @FindBy(xpath = "//span[contains(@class, 'ng-binding')][position()=2]")
     private WebElement balanceDisplay;
-
-    // Currency display
-    // Converted from CSS :nth-child(3) to XPath for explicit targeting
-    @FindBy(xpath = "//span[contains(@class, 'ng-binding')][position()=3]")
-    private WebElement currencyDisplay;
 
     // Transactions button
     // Converted from CSS to XPath for better AngularJS element matching
@@ -44,7 +46,10 @@ public class CustomerDashboardPage extends BasePage {
     private WebElement withdrawBtn;
 
     public CustomerDashboardPage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = PageInitializer.createWait(driver);
+        this.longWait = PageInitializer.createLongWait(driver);
+        PageInitializer.initElements(driver, this);
     }
 
     /**
@@ -134,5 +139,21 @@ public class CustomerDashboardPage extends BasePage {
         org.openqa.selenium.support.ui.Select select =
                 new org.openqa.selenium.support.ui.Select(accountSelect);
         return select.getOptions().size();
+    }
+
+    /**
+     * Get the current page title
+     * @return the title of the current page
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
+    }
+
+    /**
+     * Get the current page URL
+     * @return the URL of the current page
+     */
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }

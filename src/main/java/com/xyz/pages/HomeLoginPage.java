@@ -1,13 +1,19 @@
 package com.xyz.pages;
 
-import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import io.qameta.allure.Step;
 
 //Page Object for Home/Login page
 
-public class HomeLoginPage extends BasePage {
+public class HomeLoginPage {
+
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected WebDriverWait longWait;
 
     // Bank Manager Login Button
     // Using className: button has unique class "btn-primary" for bank manager
@@ -15,16 +21,19 @@ public class HomeLoginPage extends BasePage {
     private WebElement bankManagerLoginBtn;
 
     // Customer Login Button
-    // Using className: button has class "btn-default" for customer
-    @FindBy(className = "btn-default")
+    // Using xpath
+    @FindBy(xpath = "//button[normalize-space()='Bank Manager Login']")
     private WebElement customerLoginBtn;
 
     // Home Button (for navigation)
-    @FindBy(className = "home")
+    @FindBy(xpath = "//button[@class='btn home']")
     private WebElement homeBtn;
 
     public HomeLoginPage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = PageInitializer.createWait(driver);
+        this.longWait = PageInitializer.createLongWait(driver);
+        PageInitializer.initElements(driver, this);
     }
 
     /**
@@ -67,6 +76,22 @@ public class HomeLoginPage extends BasePage {
      */
     public boolean isOnHomePage() {
         return wait.until(d -> homeBtn.isDisplayed());
+    }
+
+    /**
+     * Get the current page title
+     * @return the title of the current page
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
+    }
+
+    /**
+     * Get the current page URL
+     * @return the URL of the current page
+     */
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 
 }

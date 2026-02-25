@@ -3,7 +3,6 @@ package com.xyz.tests.manager;
 import com.xyz.base.BaseTest;
 import com.xyz.models.TestData;
 import com.xyz.pages.*;
-import com.xyz.utils.TableAssertions;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.*;
 

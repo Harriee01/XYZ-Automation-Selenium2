@@ -1,19 +1,24 @@
 package com.xyz.pages;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import io.qameta.allure.Step;
 
 // Page Object for Customers list page.
 // * Displays all customers in a table with search functionality.
 
-public class CustomersPage extends BasePage {
+public class CustomersPage {
 
-
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected WebDriverWait longWait;
 
     // Search input field
     // Converted from CSS to XPath for better readability in AngularJS dynamic structures
@@ -31,7 +36,10 @@ public class CustomersPage extends BasePage {
     private List<WebElement> deleteButtons;
 
     public CustomersPage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = PageInitializer.createWait(driver);
+        this.longWait = PageInitializer.createLongWait(driver);
+        PageInitializer.initElements(driver, this);
     }
 
     /**
@@ -125,4 +133,19 @@ public class CustomersPage extends BasePage {
      */
     public record Customer(String firstName, String lastName, String postCode) {}
 
+    /**
+     * Get the current page title
+     * @return the title of the current page
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
+    }
+
+    /**
+     * Get the current page URL
+     * @return the URL of the current page
+     */
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
+    }
 }

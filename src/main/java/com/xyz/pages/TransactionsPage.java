@@ -1,20 +1,27 @@
 package com.xyz.pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import io.qameta.allure.Step;
+
 //Page Object for Transactions history page.
 // * Displays all transactions in a table with filtering options.
 
-public class TransactionsPage extends BasePage {
+public class TransactionsPage {
+
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected WebDriverWait longWait;
 
     // Locator constant for table — used in assertions and test validation
     public static final By TRANSACTION_TABLE_BY = By.xpath("//table[contains(@class, 'table-bordered')]");
@@ -40,7 +47,10 @@ public class TransactionsPage extends BasePage {
     private WebElement endDateInput;
 
     public TransactionsPage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = PageInitializer.createWait(driver);
+        this.longWait = PageInitializer.createLongWait(driver);
+        PageInitializer.initElements(driver, this);
     }
 
     /**
@@ -174,7 +184,7 @@ public class TransactionsPage extends BasePage {
      * @return boolean true if at least one transaction of that type exists
      */
     public boolean hasTransactionOfType(String type) {
-        return getTransactionsByType(type).size() > 0;
+        return !getTransactionsByType(type).isEmpty();
     }
 
     /**
@@ -190,5 +200,21 @@ public class TransactionsPage extends BasePage {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy h:mm:ss a");
             return LocalDateTime.parse(dateTime, formatter);
         }
+    }
+
+    /**
+     * Get the current page title
+     * @return the title of the current page
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
+    }
+
+    /**
+     * Get the current page URL
+     * @return the URL of the current page
+     */
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }

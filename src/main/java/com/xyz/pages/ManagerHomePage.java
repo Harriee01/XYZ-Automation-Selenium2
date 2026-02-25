@@ -1,21 +1,30 @@
 package com.xyz.pages;
 
-import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import io.qameta.allure.Step;
 
 //Page Object for Bank Manager Home page.
 // * Contains navigation buttons for manager functions.
 
-public class ManagerHomePage extends BasePage {
+public class ManagerHomePage {
+
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected WebDriverWait longWait;
 
     // Add Customer button — click to navigate to AddCustomerPage
-    @FindBy(className = "btn-lg")
+    @FindBy(xpath = "//button[@class='btn btn-lg tab btn-primary']")
     private WebElement addCustomerBtn;
 
     public ManagerHomePage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = PageInitializer.createWait(driver);
+        this.longWait = PageInitializer.createLongWait(driver);
+        PageInitializer.initElements(driver, this);
     }
 
     /**
@@ -39,7 +48,7 @@ public class ManagerHomePage extends BasePage {
     public OpenAccountPage clickOpenAccount() {
 
         // Click second button (Open Account) - using findElements approach
-        driver.findElements(org.openqa.selenium.By.className("btn-lg")).get(1).click();
+        driver.findElements(org.openqa.selenium.By.xpath("//button[@class='btn btn-lg tab btn-primary']")).get(1).click();
 
         return new OpenAccountPage(driver);
     }
@@ -52,7 +61,7 @@ public class ManagerHomePage extends BasePage {
     public CustomersPage clickCustomers() {
 
         // Click third button (Customers)
-        driver.findElements(org.openqa.selenium.By.className("btn-lg")).get(2).click();
+        driver.findElements(org.openqa.selenium.By.xpath("//button[@class='btn btn-lg tab btn-primary']")).get(2).click();
 
         return new CustomersPage(driver);
     }
@@ -65,6 +74,22 @@ public class ManagerHomePage extends BasePage {
         // Converted from CSS to XPath for better class-based element matching
         WebElement header = driver.findElement(org.openqa.selenium.By.xpath("//h1[contains(@class, 'mainHeading')]"));
         return wait.until(d -> header.getText());
+    }
+
+    /**
+     * Get the current page title
+     * @return the title of the current page
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
+    }
+
+    /**
+     * Get the current page URL
+     * @return the URL of the current page
+     */
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 
 }

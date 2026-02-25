@@ -1,17 +1,24 @@
 package com.xyz.pages;
 
-import com.xyz.utils.AlertHandler;
-import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.xyz.utils.AlertHandler;
+
+import io.qameta.allure.Step;
 
 
 //Page Object for Open Account form.
 // * Handles account creation for existing customers.
 
-public class OpenAccountPage extends BasePage {
+public class OpenAccountPage {
+
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected WebDriverWait longWait;
 
     // Customer select dropdown - has id="userSelect"
     @FindBy(id = "userSelect")
@@ -26,7 +33,10 @@ public class OpenAccountPage extends BasePage {
     private WebElement processBtn;
 
     public OpenAccountPage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = PageInitializer.createWait(driver);
+        this.longWait = PageInitializer.createLongWait(driver);
+        PageInitializer.initElements(driver, this);
     }
 
     /**
@@ -141,5 +151,21 @@ public class OpenAccountPage extends BasePage {
         wait.until(d -> processBtn.isEnabled());
         processBtn.click();
         // Note: May or may not trigger an alert; calling code handles both cases
+    }
+
+    /**
+     * Get the current page title
+     * @return the title of the current page
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
+    }
+
+    /**
+     * Get the current page URL
+     * @return the URL of the current page
+     */
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }

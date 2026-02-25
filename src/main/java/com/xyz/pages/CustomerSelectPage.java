@@ -1,18 +1,24 @@
 package com.xyz.pages;
 
-import io.qameta.allure.Step;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import io.qameta.allure.Step;
 
 //Page Object for Customer selection page.
 // * Allows customers to select their name from dropdown.
 
-public class CustomerSelectPage extends BasePage {
+public class CustomerSelectPage {
+
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected WebDriverWait longWait;
 
     // Customer dropdown
     @FindBy(id = "userSelect")
@@ -23,7 +29,10 @@ public class CustomerSelectPage extends BasePage {
     private WebElement loginBtn;
 
     public CustomerSelectPage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = PageInitializer.createWait(driver);
+        this.longWait = PageInitializer.createLongWait(driver);
+        PageInitializer.initElements(driver, this);
     }
 
     /**
@@ -101,5 +110,21 @@ public class CustomerSelectPage extends BasePage {
      */
     public int getCustomerCount() {
         return getAllCustomers().size();
+    }
+
+    /**
+     * Get the current page title
+     * @return the title of the current page
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
+    }
+
+    /**
+     * Get the current page URL
+     * @return the URL of the current page
+     */
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }

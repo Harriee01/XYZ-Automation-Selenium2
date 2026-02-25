@@ -1,15 +1,23 @@
 package com.xyz.pages;
 
-import com.xyz.utils.AlertHandler;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.xyz.utils.AlertHandler;
+
+import io.qameta.allure.Step;
 
 
 // Page Object for Deposit form.
 // * Handles deposit operations and validation.
 
-public class DepositPage extends BasePage {
+public class DepositPage {
+
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected WebDriverWait longWait;
 
     // Amount input field
     // Converted from CSS to XPath for AngularJS ng-model attribute matching
@@ -20,40 +28,43 @@ public class DepositPage extends BasePage {
     @FindBy(className = "btn-default")
     private WebElement depositBtn;
 
-    // Back button
-    @FindBy(className = "btn-default")
-    private WebElement backBtn; // Note: Same class, will need position
-
     // Success/Error message
     // Converted from CSS to XPath for better AngularJS error class handling
     @FindBy(xpath = "//span[@class='error ng-binding']")
     private WebElement messageSpan;
 
     public DepositPage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = PageInitializer.createWait(driver);
+        this.longWait = PageInitializer.createLongWait(driver);
+        PageInitializer.initElements(driver, this);
     }
 
     /**
      * Enter deposit amount
      * @param amount amount to deposit as string
+     * @return this DepositPage for method chaining
      */
     @Step("Enter deposit amount: {amount}")
-    public void enterAmount(String amount) {
+    public DepositPage enterAmount(String amount) {
         // Overload accepting String for convenience — handles form input naturally
         wait.until(d -> amountInput.isDisplayed());
         amountInput.clear();
         amountInput.sendKeys(amount);
+        return this;  // Enable fluent chaining
     }
 
     /**
      * Enter deposit amount
      * @param amount amount to deposit as double
+     * @return this DepositPage for method chaining
      */
-    public void enterAmount(double amount) {
+    public DepositPage enterAmount(double amount) {
         // Original method accepting double
         wait.until(d -> amountInput.isDisplayed());
         amountInput.clear();
         amountInput.sendKeys(String.valueOf(amount));
+        return this;  // Enable fluent chaining
     }
 
     /**
@@ -141,5 +152,21 @@ public class DepositPage extends BasePage {
      */
     public String getAmountValue() {
         return amountInput.getAttribute("value");
+    }
+
+    /**
+     * Get the current page title
+     * @return the title of the current page
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
+    }
+
+    /**
+     * Get the current page URL
+     * @return the URL of the current page
+     */
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }

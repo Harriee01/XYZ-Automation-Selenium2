@@ -245,7 +245,7 @@ public class CustomerTests extends BaseTest {
     @Story("Withdraw - Validation")
     @Severity(SeverityLevel.CRITICAL)
     @Description("TC8: Withdrawal of $0 is rejected; balance unchanged.")
-    void tc8_rejectZeroWithdrawal() {
+    public void tc8_rejectZeroWithdrawal() {
         // Seed $100 so there's a balance to observe (can't observe 0→0 meaningfully)
         dashboard.clickDeposit().deposit(TestData.DEPOSIT_AMOUNT_STR);
         driver.navigate().back();

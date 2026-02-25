@@ -1,17 +1,23 @@
 package com.xyz.pages;
 
-import com.xyz.utils.AlertHandler;
-import io.qameta.allure.Step;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.xyz.utils.AlertHandler;
+
+import io.qameta.allure.Step;
 
 
 //Page Object for Add Customer form.
 // * Handles customer creation with validation.
 
-public class AddCustomerPage extends BasePage {
+public class AddCustomerPage {
 
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected WebDriverWait longWait;
 
     // First Name input - has id="firstName"
     @FindBy(id = "firstName")
@@ -30,7 +36,10 @@ public class AddCustomerPage extends BasePage {
     private WebElement addCustomerBtn;
 
     public AddCustomerPage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = PageInitializer.createWait(driver);
+        this.longWait = PageInitializer.createLongWait(driver);
+        PageInitializer.initElements(driver, this);
     }
 
     /**
@@ -111,5 +120,21 @@ public class AddCustomerPage extends BasePage {
         return wait.until(d -> firstNameInput.isDisplayed() &&
                 lastNameInput.isDisplayed() &&
                 postCodeInput.isDisplayed());
+    }
+
+    /**
+     * Get the current page title
+     * @return the title of the current page
+     */
+    public String getPageTitle() {
+        return driver.getTitle();
+    }
+
+    /**
+     * Get the current page URL
+     * @return the URL of the current page
+     */
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }
