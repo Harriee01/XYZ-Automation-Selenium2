@@ -17,7 +17,7 @@ public class ManagerHomePage {
     protected WebDriverWait longWait;
 
     // Add Customer button — click to navigate to AddCustomerPage
-    @FindBy(xpath = "//button[@class='btn btn-lg tab btn-primary']")
+    @FindBy(xpath = "//button[normalize-space()='Add Customer']")
     private WebElement addCustomerBtn;
 
     public ManagerHomePage(WebDriver driver) {
@@ -48,7 +48,7 @@ public class ManagerHomePage {
     public OpenAccountPage clickOpenAccount() {
 
         // Click second button (Open Account) - using findElements approach
-        driver.findElements(org.openqa.selenium.By.xpath("//button[@class='btn btn-lg tab btn-primary']")).get(1).click();
+        driver.findElements(org.openqa.selenium.By.xpath("//button[normalize-space()='Open Account']")).get(1).click();
 
         return new OpenAccountPage(driver);
     }
@@ -61,7 +61,7 @@ public class ManagerHomePage {
     public CustomersPage clickCustomers() {
 
         // Click third button (Customers)
-        driver.findElements(org.openqa.selenium.By.xpath("//button[@class='btn btn-lg tab btn-primary']")).get(2).click();
+        driver.findElements(org.openqa.selenium.By.xpath("//button[normalize-space()='Customers']")).get(2).click();
 
         return new CustomersPage(driver);
     }
@@ -72,7 +72,7 @@ public class ManagerHomePage {
      */
     public String getHeaderText() {
         // Converted from CSS to XPath for better class-based element matching
-        WebElement header = driver.findElement(org.openqa.selenium.By.xpath("//h1[contains(@class, 'mainHeading')]"));
+        WebElement header = driver.findElement(org.openqa.selenium.By.xpath("//div[@class='box mainhdr']"));
         return wait.until(d -> header.getText());
     }
 
