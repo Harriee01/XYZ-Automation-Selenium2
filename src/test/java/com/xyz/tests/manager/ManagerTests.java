@@ -3,6 +3,8 @@ package com.xyz.tests.manager;
 import com.xyz.base.BaseTest;
 import com.xyz.models.TestData;
 import com.xyz.pages.*;
+import com.xyz.pages.manager.AddCustomerPage;
+import com.xyz.pages.manager.ManagerHomePage;
 import io.qameta.allure.*;
 import org.junit.jupiter.api.*;
 
@@ -216,7 +218,7 @@ public class ManagerTests extends BaseTest {
                 .clickOpenAccount();
 
         // Select a valid customer but do NOT select currency (leave at default)
-        openAccountPage.selectCustomer(TestData.EXISTING_CUSTOMER_NAME);
+        openAccountPage.selectCustomer();
         // Intentionally skip selectCurrency() — testing empty state
 
         // Click Process — may or may not show an alert

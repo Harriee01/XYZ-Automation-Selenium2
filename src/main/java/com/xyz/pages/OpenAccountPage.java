@@ -6,9 +6,13 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+//import com.xyz.models.TestData.*;
 import com.xyz.utils.AlertHandler;
 
 import io.qameta.allure.Step;
+
+import static com.xyz.models.TestData.CURRENCY_DOLLAR;
+import static com.xyz.models.TestData.EXISTING_CUSTOMER_NAME;
 
 
 //Page Object for Open Account form.
@@ -29,7 +33,7 @@ public class OpenAccountPage {
     private WebElement currencySelect;
 
     // Process button
-    @FindBy(className = "btn-default")
+    @FindBy(xpath = "//button[@type='submit']")
     private WebElement processBtn;
 
     public OpenAccountPage(WebDriver driver) {
@@ -41,14 +45,13 @@ public class OpenAccountPage {
 
     /**
      * Select customer from dropdown by visible text
-     * @param customerName full name as "FirstName LastName"
      */
     @Step("Select customer: {customerName}")
-    public void selectCustomer(String customerName) {
+    public void selectCustomer() {
 
         wait.until(d -> customerSelect.isDisplayed());
         Select select = new Select(customerSelect);
-        select.selectByVisibleText(customerName);
+        select.selectByVisibleText(EXISTING_CUSTOMER_NAME );
     }
 
     /**
@@ -65,14 +68,14 @@ public class OpenAccountPage {
 
     /**
      * Select currency from dropdown
-     * @param currency currency name (e.g., "Dollar")
+     * @param currency currency name (see TestData.CURRENCY_DOLLAR)
      */
     @Step("Select currency: {currency}")
     public void selectCurrency(String currency) {
 
         wait.until(d -> currencySelect.isDisplayed());
         Select select = new Select(currencySelect);
-        select.selectByVisibleText(currency);
+        select.selectByVisibleText(CURRENCY_DOLLAR);
     }
 
     /**
@@ -102,8 +105,8 @@ public class OpenAccountPage {
     @Step("Open account for {customerName} in {currency}")
     public String openAccount(String customerName, String currency) {
 
-        selectCustomer(customerName);
-        selectCurrency(currency);
+        selectCustomer();
+        selectCurrency(CURRENCY_DOLLAR);
         return clickProcess();
     }
 
