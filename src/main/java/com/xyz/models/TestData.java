@@ -25,7 +25,7 @@ public final class TestData {
     public static final String NEGATIVE_AMOUNT_STR = "-50";  // String version for form input
 
     // Success Messages
-    public static final String MSG_CUSTOMER_ADDED = "Customer added successfully";  // Partial match for alert
+    public static final String MSG_CUSTOMER_ADDED = "Customer added successfully with customer id :6";  // Partial match for alert
     public static final String MSG_ACCOUNT_CREATED = "Account created successfully";  // Partial match for alert
     public static final String MSG_DEPOSIT_SUCCESS = "Deposit Successful";  // Message shown after deposit
     public static final String MSG_WITHDRAW_SUCCESS = "Transaction successful";  // Message shown after withdrawal

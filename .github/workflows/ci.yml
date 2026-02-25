@@ -61,6 +61,7 @@ jobs:
           else
             echo "✅ Pipeline PASSED"
           fi
+          
 
       # Slack notification
       - name: Notify Slack on Failure
