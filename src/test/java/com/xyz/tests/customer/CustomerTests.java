@@ -105,4 +105,25 @@ public class CustomerTests extends BaseTest {
                 .isEqualTo(initialBalance);
     }
 
+    //Verify rejection of a negative deposit amount.
+    @Test
+    @Order(3)
+    @Story("Deposit - Validation")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("TC3: Deposit of negative amount is rejected; balance unchanged.")
+    void tc3_rejectNegativeDeposit() {
+        double initialBalance = dashboard.getBalanceAsDouble();
+
+        DepositPage depositPage = dashboard.clickDeposit();
+        depositPage.enterAmount(TestData.NEGATIVE_AMOUNT_STR).clickDeposit();
+
+        driver.navigate().back();
+        double balanceAfter = dashboard.getBalanceAsDouble();
+
+        assertThat(balanceAfter)
+                .as("Balance should not change after attempting negative deposit of %s",
+                        TestData.NEGATIVE_AMOUNT_STR)
+                .isEqualTo(initialBalance);
+    }
+
 }
