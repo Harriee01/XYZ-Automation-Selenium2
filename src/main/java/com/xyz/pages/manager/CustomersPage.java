@@ -1,8 +1,9 @@
-package com.xyz.pages;
+package com.xyz.pages.manager;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.xyz.pages.PageInitializer;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

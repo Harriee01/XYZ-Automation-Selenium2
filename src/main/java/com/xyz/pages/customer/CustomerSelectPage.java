@@ -1,8 +1,9 @@
-package com.xyz.pages;
+package com.xyz.pages.customer;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.xyz.pages.PageInitializer;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;

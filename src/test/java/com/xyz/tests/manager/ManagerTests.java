@@ -4,6 +4,7 @@ import com.xyz.base.BaseTest;
 import com.xyz.models.TestData;
 import com.xyz.pages.*;
 import com.xyz.pages.manager.AddCustomerPage;
+import com.xyz.pages.manager.CustomersPage;
 import com.xyz.pages.manager.ManagerHomePage;
 import com.xyz.pages.manager.OpenAccountPage;
 import io.qameta.allure.*;

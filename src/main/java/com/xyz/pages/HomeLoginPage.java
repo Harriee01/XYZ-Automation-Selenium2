@@ -1,5 +1,6 @@
 package com.xyz.pages;
 
+import com.xyz.pages.customer.CustomerSelectPage;
 import com.xyz.pages.manager.ManagerHomePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
