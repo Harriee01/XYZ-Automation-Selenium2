@@ -17,12 +17,12 @@ public class HomeLoginPage {
 
     // Bank Manager Login Button
     // Using className: button has unique class "btn-primary" for bank manager
-    @FindBy(className = "btn-primary")
+    @FindBy(xpath = "//button[normalize-space()='Bank Manager Login']")
     private WebElement bankManagerLoginBtn;
 
     // Customer Login Button
     // Using xpath
-    @FindBy(xpath = "//button[normalize-space()='Bank Manager Login']")
+    @FindBy(xpath = "//button[normalize-space()='Customer Login']")
     private WebElement customerLoginBtn;
 
     // Home Button (for navigation)
