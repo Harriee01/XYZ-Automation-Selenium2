@@ -179,5 +179,34 @@ public class CustomerTests extends BaseTest {
         TableAssertions.assertNoEditDeleteControls(driver, TransactionsPage.TRANSACTION_TABLE_BY);
     }
 
+    //Verify a $100 deposit updates balance by exactly +100 and shows success message.
+    @Test
+    @Order(6)
+    @Story("Deposit")
+    @Severity(SeverityLevel.BLOCKER)
+    @Description("TC6: $100 deposit increases balance by exactly $100; Deposit Successful message shown.")
+    void tc6_hundredDollarDepositUpdatesBalance() {
+        double initialBalance = dashboard.getBalanceAsDouble();
+
+        // Perform deposit and capture status message
+        DepositPage depositPage = dashboard.clickDeposit();
+        String message = depositPage.deposit(TestData.DEPOSIT_AMOUNT_STR);
+
+        // Assert success message
+        assertThat(message)
+                .as("Expected 'Deposit Successful' message after $100 deposit")
+                .isEqualTo(TestData.MSG_DEPOSIT_SUCCESS);
+
+        // Navigate back to dashboard to read updated balance
+        driver.navigate().back();
+        double newBalance = dashboard.getBalanceAsDouble();
+
+        assertThat(newBalance)
+                .as("Balance should increase by exactly $%.0f after deposit", TestData.DEPOSIT_AMOUNT)
+                .isEqualTo(initialBalance + TestData.DEPOSIT_AMOUNT);
+    }
+
+
 
 }
+
