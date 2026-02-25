@@ -5,9 +5,11 @@ import com.xyz.pages.manager.ManagerHomePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import io.qameta.allure.Step;
+import com.xyz.utils.PageInitializer;
 
 //Page Object for Home/Login page
 
@@ -35,7 +37,7 @@ public class HomeLoginPage {
         this.driver = driver;
         this.wait = PageInitializer.createWait(driver);
         this.longWait = PageInitializer.createLongWait(driver);
-        PageInitializer.initElements(driver, this);
+        PageFactory.initElements(driver, this);
     }
 
     /**

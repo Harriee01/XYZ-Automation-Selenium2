@@ -1,9 +1,10 @@
 package com.xyz.pages.manager;
 
-import com.xyz.pages.PageInitializer;
+import com.xyz.utils.PageInitializer;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -41,7 +42,7 @@ public class OpenAccountPage {
         this.driver = driver;
         this.wait = PageInitializer.createWait(driver);
         this.longWait = PageInitializer.createLongWait(driver);
-        PageInitializer.initElements(driver, this);
+        PageFactory.initElements(driver, this);
     }
 
     /**

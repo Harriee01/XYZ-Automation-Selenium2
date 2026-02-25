@@ -1,9 +1,10 @@
 package com.xyz.pages.customer;
 
-import com.xyz.pages.PageInitializer;
+import com.xyz.utils.PageInitializer;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.xyz.utils.AlertHandler;
@@ -38,7 +39,7 @@ public class DepositPage {
         this.driver = driver;
         this.wait = PageInitializer.createWait(driver);
         this.longWait = PageInitializer.createLongWait(driver);
-        PageInitializer.initElements(driver, this);
+        PageFactory.initElements(driver, this);
     }
 
     /**
