@@ -9,6 +9,8 @@ import com.xyz.utils.AlertHandler;
 
 import io.qameta.allure.Step;
 
+import static com.xyz.models.TestData.*;
+
 
 //Page Object for Add Customer form.
 // * Handles customer creation with validation.
@@ -20,19 +22,19 @@ public class AddCustomerPage {
     protected WebDriverWait longWait;
 
     // First Name input - has id="firstName"
-    @FindBy(id = "firstName")
+    @FindBy(xpath = "//input[@placeholder='First Name']")
     private WebElement firstNameInput;
 
     // Last Name input - has id="lastName"
-    @FindBy(id = "lastName")
+    @FindBy(xpath = "//input[@placeholder='Last Name']")
     private WebElement lastNameInput;
 
     // Post Code input - has id="postCode"
-    @FindBy(id = "postCode")
+    @FindBy(xpath = "//input[@placeholder='Post Code']")
     private WebElement postCodeInput;
 
     // Add Customer button
-    @FindBy(className = "btn-default")
+    @FindBy(xpath = "//button[@type='submit']")
     private WebElement addCustomerBtn;
 
     public AddCustomerPage(WebDriver driver) {
@@ -44,26 +46,24 @@ public class AddCustomerPage {
 
     /**
      * Enter first name in the form
-     * @param firstName customer's first name
      */
     @Step("Enter first name: {firstName}")
-    public void enterFirstName(String firstName) {
+    public void enterFirstName() {
 
         wait.until(d -> firstNameInput.isDisplayed());
         firstNameInput.clear();
-        firstNameInput.sendKeys(firstName);
+        firstNameInput.sendKeys(CUSTOMER_FIRST_NAME);
     }
 
     /**
      * Enter last name in the form
-     * @param lastName customer's last name
      */
     @Step("Enter last name: {lastName}")
-    public void enterLastName(String lastName) {
+    public void enterLastName() {
 
         wait.until(d -> lastNameInput.isDisplayed());
         lastNameInput.clear();
-        lastNameInput.sendKeys(lastName);
+        lastNameInput.sendKeys(CUSTOMER_LAST_NAME);
     }
 
     /**
@@ -75,7 +75,7 @@ public class AddCustomerPage {
 
         wait.until(d -> postCodeInput.isDisplayed());
         postCodeInput.clear();
-        postCodeInput.sendKeys(postCode);
+        postCodeInput.sendKeys(CUSTOMER_POST_CODE);
     }
 
     /**
@@ -106,8 +106,8 @@ public class AddCustomerPage {
     @Step("Add customer: {firstName} {lastName} (PostCode: {postCode})")
     public String addCustomer(String firstName, String lastName, String postCode) {
 
-        enterFirstName(firstName);
-        enterLastName(lastName);
+        enterFirstName();
+        enterLastName();
         enterPostCode(postCode);
         return clickAddCustomer();
     }
