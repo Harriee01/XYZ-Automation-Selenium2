@@ -22,17 +22,17 @@ public class CustomersPage {
 
     // Search input field
     // Converted from CSS to XPath for better readability in AngularJS dynamic structures
-    @FindBy(xpath = "//input[@ng-model='searchCustomer']")
+    @FindBy(xpath = "//input[@placeholder='Search Customer']")
     private WebElement searchInput;
 
     // Customers table
     // Converted from CSS to XPath para AngularJS compatibility
-    @FindBy(xpath = "//table[contains(@class, 'table-bordered') and contains(@class, 'table-striped')]")
+    @FindBy(xpath = "/html/body/div/div/div[2]/div/div[2]/div/div/table")
     private WebElement customersTable;
 
     // Delete buttons in table
     // Converted from CSS to XPath for robust element identification
-    @FindBy(xpath = "//button[@ng-click='deleteCust(cust)']")
+    @FindBy(xpath = "//tbody/tr[1]/td[5]/button[1]")
     private List<WebElement> deleteButtons;
 
     public CustomersPage(WebDriver driver) {
