@@ -126,4 +126,35 @@ public class CustomerTests extends BaseTest {
                 .isEqualTo(initialBalance);
     }
 
+    //Verify a valid deposit immediately appears in transaction history.
+    @Test
+    @Order(4)
+    @Story("Transaction History")
+    @Severity(SeverityLevel.BLOCKER)
+    @Description("TC4: After a valid deposit, the transaction appears immediately in the history table.")
+    void tc4_depositAppearsInTransactionHistory() {
+        // Navigate to Transactions FIRST to get baseline count (may be 0 for fresh account)
+        TransactionsPage txPage = dashboard.clickTransactions();
+        int countBefore = txPage.getTransactionCount();
+
+        // Go back to dashboard to deposit
+        driver.navigate().back();
+
+        // Perform deposit
+        dashboard.clickDeposit().deposit(TestData.DEPOSIT_AMOUNT_STR);
+
+        // Navigate to Transactions again — fresh page object because AngularJS re-rendered view
+        txPage = dashboard.clickTransactions();
+
+        // Assert count increased by exactly 1
+        assertThat(txPage.getTransactionCount())
+                .as("Transaction count should increase by 1 after deposit")
+                .isEqualTo(countBefore + 1);
+
+        // Assert the new row indicates a Credit (deposit) transaction type
+        assertThat(txPage.hasTransactionOfType("Credit"))
+                .as("Transaction history should contain a 'Credit' entry after deposit")
+                .isTrue();
+    }
+
 }
