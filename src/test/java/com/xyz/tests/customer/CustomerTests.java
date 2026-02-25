@@ -206,6 +206,37 @@ public class CustomerTests extends BaseTest {
                 .isEqualTo(initialBalance + TestData.DEPOSIT_AMOUNT);
     }
 
+    //Verify $50 withdrawal reduces balance by exactly $50 and shows success message.
+
+    @Test
+    @Order(7)
+    @Story("Withdraw")
+    @Severity(SeverityLevel.BLOCKER)
+    @Description("TC7: $50 withdrawal decreases balance by exactly $50; Transaction successful message shown.")
+    void tc7_fiftyDollarWithdrawalUpdatesBalance() {
+        // Seed account with $100 so withdrawal is possible
+        dashboard.clickDeposit().deposit(TestData.DEPOSIT_AMOUNT_STR);
+        driver.navigate().back();
+
+        double balanceAfterDeposit = dashboard.getBalanceAsDouble();
+
+        // Perform $50 withdrawal
+        WithdrawPage withdrawPage = dashboard.clickWithdraw();
+        String message = withdrawPage.withdraw(TestData.WITHDRAW_AMOUNT_STR);
+
+        // Assert success message
+        assertThat(message)
+                .as("Expected withdrawal success message")
+                .isEqualTo(TestData.MSG_WITHDRAW_SUCCESS);
+
+        // Navigate back and verify balance decreased by $50
+        driver.navigate().back();
+        double finalBalance = dashboard.getBalanceAsDouble();
+
+        assertThat(finalBalance)
+                .as("Balance should decrease by exactly $%.0f after withdrawal", TestData.WITHDRAW_AMOUNT)
+                .isEqualTo(balanceAfterDeposit - TestData.WITHDRAW_AMOUNT);
+    }
 
 
 }
