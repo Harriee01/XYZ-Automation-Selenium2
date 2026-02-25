@@ -157,4 +157,27 @@ public class CustomerTests extends BaseTest {
                 .isTrue();
     }
 
+    //Verify transaction history table is read-only (no edit/delete UI controls).
+    @Test
+    @Order(5)
+    @Story("Transaction History")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("TC5: Transaction history table has no edit or delete controls — read-only for customers.")
+    void tc5_transactionHistoryIsReadOnly() {
+        // Make a deposit so the table has at least one row to inspect
+        dashboard.clickDeposit().deposit(TestData.DEPOSIT_AMOUNT_STR);
+
+        // Navigate to Transactions
+        TransactionsPage txPage = dashboard.clickTransactions();
+
+        // Assert table is displayed first (precondition for read-only check)
+        assertThat(txPage.isTableDisplayed())
+                .as("Transaction table must be visible before checking read-only")
+                .isTrue();
+
+        // Use TableAssertions — checks no <button> or <input> elements in the table
+        TableAssertions.assertNoEditDeleteControls(driver, TransactionsPage.TRANSACTION_TABLE_BY);
+    }
+
+
 }
