@@ -238,6 +238,33 @@ public class CustomerTests extends BaseTest {
                 .isEqualTo(balanceAfterDeposit - TestData.WITHDRAW_AMOUNT);
     }
 
+    //Verify the system rejects a withdrawal of $0.
+
+    @Test
+    @Order(8)
+    @Story("Withdraw - Validation")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("TC8: Withdrawal of $0 is rejected; balance unchanged.")
+    void tc8_rejectZeroWithdrawal() {
+        // Seed $100 so there's a balance to observe (can't observe 0→0 meaningfully)
+        dashboard.clickDeposit().deposit(TestData.DEPOSIT_AMOUNT_STR);
+        driver.navigate().back();
+
+        double balanceAfterDeposit = dashboard.getBalanceAsDouble();
+
+        // Attempt $0 withdrawal
+        WithdrawPage withdrawPage = dashboard.clickWithdraw();
+        withdrawPage.enterAmount(TestData.ZERO_AMOUNT_STR).clickWithdraw();
+
+        driver.navigate().back();
+        double balanceAfterAttempt = dashboard.getBalanceAsDouble();
+
+        assertThat(balanceAfterAttempt)
+                .as("Balance should not change after attempting zero withdrawal")
+                .isEqualTo(balanceAfterDeposit);
+    }
+
+
 
 }
 
