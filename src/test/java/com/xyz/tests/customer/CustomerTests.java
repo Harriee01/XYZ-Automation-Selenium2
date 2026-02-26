@@ -100,9 +100,7 @@ public class CustomerTests extends BaseTest {
         DepositPage depositPage = dashboard.clickDeposit();
         depositPage.enterAmount(TestData.ZERO_AMOUNT_STR).clickDeposit();
 
-        // Check balance — navigate back to dashboard to read it
-        driver.navigate().back();  // SPA back navigation returns to dashboard view
-        // Allow AngularJS a moment to re-render the balance
+        // Check balance directly from the updated dashboard summary
         double balanceAfter = dashboard.getBalanceAsDouble();
 
         assertThat(balanceAfter)
@@ -122,7 +120,6 @@ public class CustomerTests extends BaseTest {
         DepositPage depositPage = dashboard.clickDeposit();
         depositPage.enterAmount(TestData.NEGATIVE_AMOUNT_STR).clickDeposit();
 
-        driver.navigate().back();
         double balanceAfter = dashboard.getBalanceAsDouble();
 
         assertThat(balanceAfter)
@@ -202,8 +199,7 @@ public class CustomerTests extends BaseTest {
                 .as("Expected 'Deposit Successful' message after $100 deposit")
                 .isEqualTo(TestData.MSG_DEPOSIT_SUCCESS);
 
-        // Navigate back to dashboard to read updated balance
-        driver.navigate().back();
+        // Read updated balance directly from the dashboard summary
         double newBalance = dashboard.getBalanceAsDouble();
 
         assertThat(newBalance)
@@ -221,8 +217,6 @@ public class CustomerTests extends BaseTest {
     void tc7_fiftyDollarWithdrawalUpdatesBalance() {
         // Seed account with $100 so withdrawal is possible
         dashboard.clickDeposit().deposit(TestData.DEPOSIT_AMOUNT_STR);
-        driver.navigate().back();
-
         double balanceAfterDeposit = dashboard.getBalanceAsDouble();
 
         // Perform $50 withdrawal
@@ -234,8 +228,7 @@ public class CustomerTests extends BaseTest {
                 .as("Expected withdrawal success message")
                 .isEqualTo(TestData.MSG_WITHDRAW_SUCCESS);
 
-        // Navigate back and verify balance decreased by $50
-        driver.navigate().back();
+        // Verify balance decreased by $50 using updated dashboard summary
         double finalBalance = dashboard.getBalanceAsDouble();
 
         assertThat(finalBalance)
@@ -253,15 +246,12 @@ public class CustomerTests extends BaseTest {
     public void tc8_rejectZeroWithdrawal() {
         // Seed $100 so there's a balance to observe (can't observe 0→0 meaningfully)
         dashboard.clickDeposit().deposit(TestData.DEPOSIT_AMOUNT_STR);
-        driver.navigate().back();
-
         double balanceAfterDeposit = dashboard.getBalanceAsDouble();
 
         // Attempt $0 withdrawal
         WithdrawPage withdrawPage = dashboard.clickWithdraw();
         withdrawPage.enterAmount(TestData.ZERO_AMOUNT_STR).clickWithdraw();
 
-        driver.navigate().back();
         double balanceAfterAttempt = dashboard.getBalanceAsDouble();
 
         assertThat(balanceAfterAttempt)
