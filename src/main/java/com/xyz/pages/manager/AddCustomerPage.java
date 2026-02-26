@@ -11,9 +11,6 @@ import com.xyz.utils.AlertHandler;
 
 import io.qameta.allure.Step;
 
-import static com.xyz.models.TestData.*;
-
-
 //Page Object for Add Customer form.
 // * Handles customer creation with validation.
 
@@ -50,22 +47,20 @@ public class AddCustomerPage {
      * Enter first name in the form
      */
     @Step("Enter first name: {firstName}")
-    public void enterFirstName() {
-
+    public void enterFirstName(String firstName) {
         wait.until(d -> firstNameInput.isDisplayed());
         firstNameInput.clear();
-        firstNameInput.sendKeys(CUSTOMER_FIRST_NAME);
+        firstNameInput.sendKeys(firstName);
     }
 
     /**
      * Enter last name in the form
      */
     @Step("Enter last name: {lastName}")
-    public void enterLastName() {
-
+    public void enterLastName(String lastName) {
         wait.until(d -> lastNameInput.isDisplayed());
         lastNameInput.clear();
-        lastNameInput.sendKeys(CUSTOMER_LAST_NAME);
+        lastNameInput.sendKeys(lastName);
     }
 
     /**
@@ -74,10 +69,9 @@ public class AddCustomerPage {
      */
     @Step("Enter post code: {postCode}")
     public void enterPostCode(String postCode) {
-
         wait.until(d -> postCodeInput.isDisplayed());
         postCodeInput.clear();
-        postCodeInput.sendKeys(CUSTOMER_POST_CODE);
+        postCodeInput.sendKeys(postCode);
     }
 
     /**
@@ -107,9 +101,8 @@ public class AddCustomerPage {
      */
     @Step("Add customer: {firstName} {lastName} (PostCode: {postCode})")
     public String addCustomer(String firstName, String lastName, String postCode) {
-
-        enterFirstName();
-        enterLastName();
+        enterFirstName(firstName);
+        enterLastName(lastName);
         enterPostCode(postCode);
         return clickAddCustomer();
     }

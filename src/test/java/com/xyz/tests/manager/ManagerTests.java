@@ -66,7 +66,6 @@ public class ManagerTests extends BaseTest {
                 TestData.CUSTOMER_POST_CODE
         );
 
-        // The alert should NOT say customer was added successfully
         assertThat(alertText)
                 .as("Expected rejection for numeric first name but got success message")
                 .doesNotContain(TestData.MSG_CUSTOMER_ADDED);
@@ -199,13 +198,13 @@ public class ManagerTests extends BaseTest {
         assertThat(options)
                 .as("All dropdown options should be recognisable (placeholder or seeded customer names)")
                 .allMatch(opt -> opt.isBlank()
+                        || opt.startsWith("---Customer Name---")  // placeholder option text in the demo app
                         || opt.contains("Harry")
-                        || opt.contains("Hermione")
+                        || opt.contains("Hermoine")   // matches actual spelling in the dropdown
                         || opt.contains("Ron")
                         || opt.contains("Albus")
                         || opt.contains("Neville")
-                        || opt.contains(TestData.CUSTOMER_FIRST_NAME)  // may or may not be present
-                        || opt.equals("---"));               // placeholder option
+                        || opt.contains(TestData.CUSTOMER_FIRST_NAME));  // may or may not be present
     }
 
     //TC8 — Verify the form prevents account creation when no currency is selected.

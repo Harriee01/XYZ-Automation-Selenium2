@@ -48,14 +48,10 @@ public class CustomerTests extends BaseTest {
     }
 
     private void selectLastAccount() {
-        org.openqa.selenium.WebElement accountDropdown =
-                driver.findElement(org.openqa.selenium.By.cssSelector("[ng-model='accountNo']"));
-        org.openqa.selenium.support.ui.Select select =
-                new org.openqa.selenium.support.ui.Select(accountDropdown);
-        // Select the last option (highest index) — most recently created account
-        int lastIndex = select.getOptions().size() - 1;
-        if (lastIndex > 0) {  // index 0 may be a blank placeholder
-            select.selectByIndex(lastIndex);
+        // Use the CustomerDashboardPage API, which is already wired to the real dropdown
+        int lastIndex = dashboard.getAccountCount() - 1;
+        if (lastIndex > 0) {  // index 0 may be a placeholder
+            dashboard.selectAccount(lastIndex);
         }
     }
     //TC1 — Verify logged-in customer sees transaction history table clearly.
