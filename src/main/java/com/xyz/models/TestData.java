@@ -3,6 +3,8 @@ package com.xyz.models;
 //Centralized test data repository for XYZ Bank test suite.
 
 public final class TestData {
+// final, closed for modification but open for extension through the addition of new constants
+
 
     // Customer Data
     public static final String CUSTOMER_FIRST_NAME = "John";

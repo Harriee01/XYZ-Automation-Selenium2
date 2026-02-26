@@ -26,6 +26,7 @@ public class CustomerTests extends BaseTest {
     @Override
     public void setUp() {
         super.setUp();  // creates driver, maximises, navigates to BASE_URL
+//change
 
         // Step 1: Open a fresh account for Harry Potter as Manager
         new HomeLoginPage(driver)

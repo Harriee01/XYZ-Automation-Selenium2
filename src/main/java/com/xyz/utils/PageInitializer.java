@@ -23,7 +23,7 @@ public class PageInitializer {
 
     /**
      * Initialize a page object with WebDriver, waits, and PageFactory element locators
-     * Call this from your page's constructor: PageInitializer.initializePage(driver, this);
+     * Call this from  page's constructor: PageInitializer.initializePage(driver, this);
      *
      * @param driver the active WebDriver instance
      * @param pageObject the page object instance to initialize
