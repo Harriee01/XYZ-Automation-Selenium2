@@ -1,15 +1,16 @@
 package com.xyz.pages.customer;
 
 import com.xyz.utils.PageInitializer;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import io.qameta.allure.Step;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,8 +32,9 @@ public class CustomerDashboardPage {
     @FindBy(id = "accountSelect")
     private WebElement accountSelect;
 
-    private static final By ACCOUNT_SUMMARY_CONTAINER =
-            By.xpath("//div[contains(@class,'center')][.//select[@id='accountSelect']]");
+    // Text on the page that contains the "Balance :" label and value
+    private static final By BALANCE_TEXT_LOCATOR =
+            By.xpath("//*[contains(normalize-space(.), 'Balance :')]");
     private static final Pattern BALANCE_PATTERN =
             Pattern.compile("Balance\\s*:\\s*([0-9]+(?:\\.[0-9]+)?)");
 
@@ -76,14 +78,17 @@ public class CustomerDashboardPage {
      */
     @Step("Get current balance")
     public double getBalanceAsDouble() {
-        wait.until(d -> accountSelect.isDisplayed());
-        WebElement summary = wait.until(d -> d.findElement(ACCOUNT_SUMMARY_CONTAINER));
-        String summaryText = summary.getText();
+        // Wait until some element containing "Balance :" is present
+        WebElement balanceElement = wait.until(d -> {
+            List<WebElement> els = d.findElements(BALANCE_TEXT_LOCATOR);
+            return els.isEmpty() ? null : els.get(0);
+        });
 
-        Matcher matcher = BALANCE_PATTERN.matcher(summaryText);
+        String text = balanceElement.getText();
+        Matcher matcher = BALANCE_PATTERN.matcher(text);
         if (!matcher.find()) {
             throw new org.openqa.selenium.NoSuchElementException(
-                    "Could not parse Balance from account summary text: " + summaryText);
+                    "Could not parse Balance from text: " + text);
         }
         return Double.parseDouble(matcher.group(1));
     }
@@ -135,8 +140,8 @@ public class CustomerDashboardPage {
         org.openqa.selenium.support.ui.Select select =
                 new org.openqa.selenium.support.ui.Select(accountSelect);
         select.selectByIndex(index);
-        // Ensure the account summary is visible after the account switch
-        wait.until(d -> d.findElement(ACCOUNT_SUMMARY_CONTAINER).isDisplayed());
+        // After selecting an account, just ensure the dropdown is still interactable.
+        wait.until(d -> accountSelect.isDisplayed());
     }
 
     /**
