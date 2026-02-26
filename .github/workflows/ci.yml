@@ -2,9 +2,9 @@ name: Selenium Tests CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, base, feature/pages, utils]
   pull_request:
-    branches: [main, develop]
+    branches: [main,  base, feature/pages, utils]
 
 jobs:
   test:
@@ -31,6 +31,7 @@ jobs:
         uses: simple-elf/allure-report-action@master
         with:
           allure_results: target/allure-results
+          allure_report: target/allure-report
           gh_pages: gh-pages
           allure_history: allure-history
 
@@ -48,37 +49,50 @@ jobs:
           name: allure-results
           path: target/allure-results/
 
-  notify:
-    needs: test
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Test Summary
-        run: |
-          echo "Tests completed with status: ${{ needs.test.result }}"
-          if [ "${{ needs.test.result }}" == "failure" ]; then
-            echo "❌ Pipeline FAILED - Check Allure report"
-          else
-            echo "✅ Pipeline PASSED"
-          fi
-          
-
-      # Slack notification
-      - name: Notify Slack on Failure
-        if: failure()
-        uses: slackapi/slack-github-action@v1
+      - name: 📋 Parse Test Results
+        if: always()
+        id: test-results
+        uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          payload: |
-            {
-              "text": "❌ Selenium Tests Failed",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*XYZ Bank Tests - FAILURE*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>"
+            files: target/surefire-reports/**/*.xml
+            comment_mode: always    # post comment on PR with results
+            check_name: "🧪 Selenium Test Results"
+
+      - name: 📣 Notify Slack
+        if: always()   # notify even on failure so team is alerted
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+            payload: |
+              {
+              "text": "${{ job.status == 'success' && '✅' || '❌' }} *XYZ Bank Selenium* — Run #${{ github.run_number }}",
+                "blocks": [
+                  {
+                    "type": "header",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "${{ job.status == 'success' && '✅ Tests Passed' || '❌ Tests FAILED' }} — XYZ Bank Selenium"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "fields": [
+                      { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                      { "type": "mrkdwn", "text": "*Triggered by:*\n`${{ github.actor }}`" },
+                      { "type": "mrkdwn", "text": "*Run:*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>" },
+                      { "type": "mrkdwn", "text": "*Allure Report:*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Download Artifact>" }
+                    ]
+                  },
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "*Tests:* ${{ steps.test-results.outputs.passed }} passed ✅ | ${{ steps.test-results.outputs.failed }} failed ❌ | ${{ steps.test-results.outputs.skipped }} skipped ⏭️"
+                    }
                   }
-                }
-              ]
-            }
+                ]
+              }
+        env:
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+            SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+
