@@ -125,6 +125,12 @@
                     </includes>
                 </configuration>
             </plugin>
+            <!-- Allure Maven plugin to enable `mvn allure:serve` and `mvn allure:report` -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.17.0</version>
+            </plugin>
         </plugins>
     </build>
 

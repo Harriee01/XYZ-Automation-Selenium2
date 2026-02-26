@@ -27,7 +27,7 @@ public class CustomerSelectPage {
     private WebElement customerDropdown;
 
     // Login button
-    @FindBy(className = "btn-default")
+    @FindBy(xpath = "//button[@type='submit']")
     private WebElement loginBtn;
 
     public CustomerSelectPage(WebDriver driver) {

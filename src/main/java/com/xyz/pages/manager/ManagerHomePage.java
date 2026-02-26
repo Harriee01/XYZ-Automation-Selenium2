@@ -22,6 +22,14 @@ public class ManagerHomePage {
     @FindBy(xpath = "//button[normalize-space()='Add Customer']")
     private WebElement addCustomerBtn;
 
+    // Open Account button — click to navigate to OpenAccountPage
+    @FindBy(xpath = "//button[normalize-space()='Open Account']")
+    private WebElement openAccountBtn;
+
+    // Customers button — click to navigate to CustomersPage
+    @FindBy(xpath = "//button[normalize-space()='Customers']")
+    private WebElement customersBtn;
+
     public ManagerHomePage(WebDriver driver) {
         this.driver = driver;
         this.wait = PageInitializer.createWait(driver);
@@ -48,10 +56,8 @@ public class ManagerHomePage {
      */
     @Step("Click Open Account button")
     public OpenAccountPage clickOpenAccount() {
-
-        // Click second button (Open Account) - using findElements approach
-        driver.findElements(org.openqa.selenium.By.xpath("//button[normalize-space()='Open Account']")).get(1).click();
-
+        wait.until(d -> openAccountBtn.isDisplayed() && openAccountBtn.isEnabled());
+        openAccountBtn.click();
         return new OpenAccountPage(driver);
     }
 
@@ -61,10 +67,8 @@ public class ManagerHomePage {
      */
     @Step("Click Customers button")
     public CustomersPage clickCustomers() {
-
-        // Click third button (Customers)
-        driver.findElements(org.openqa.selenium.By.xpath("//button[normalize-space()='Customers']")).get(2).click();
-
+        wait.until(d -> customersBtn.isDisplayed() && customersBtn.isEnabled());
+        customersBtn.click();
         return new CustomersPage(driver);
     }
 
