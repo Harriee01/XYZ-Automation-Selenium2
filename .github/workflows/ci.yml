@@ -95,4 +95,44 @@ jobs:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
             SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
-
+      - name: 📧 Send Email Notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+           server_address: smtp.gmail.com
+           server_port: 587
+           secure: false           # STARTTLS on port 587
+           username: ${{ secrets.EMAIL_USERNAME }}
+           password: ${{ secrets.EMAIL_PASSWORD }}   # Gmail App Password (not account password)
+           subject: |
+              ${{ job.status == 'success' && '✅' || '❌' }} XYZ Bank Selenium — Run #${{ github.run_number }} (${{ github.ref_name }})
+            to: ${{ secrets.EMAIL_TO }}
+            from: XYZ Bank CI <${{ secrets.EMAIL_USERNAME }}>
+            html_body: |
+              <html>
+              <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: ${{ job.status == 'success' && '#28a745' || '#dc3545' }};">
+                  ${{ job.status == 'success' && '✅ Tests Passed' || '❌ Tests FAILED' }}
+                </h2>
+                <table style="border-collapse: collapse; width: 100%;">
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Branch</b></td>
+                      <td style="padding: 8px; border: 1px solid #ddd;">${{ github.ref_name }}</td></tr>
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Triggered by</b></td>
+                      <td style="padding: 8px; border: 1px solid #ddd;">${{ github.actor }}</td></tr>
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Run Number</b></td>
+                      <td style="padding: 8px; border: 1px solid #ddd;">#${{ github.run_number }}</td></tr>
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Passed ✅</b></td>
+                      <td style="padding: 8px; border: 1px solid #ddd;">${{ steps.test-results.outputs.passed }}</td></tr>
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Failed ❌</b></td>
+                      <td style="padding: 8px; border: 1px solid #ddd;">${{ steps.test-results.outputs.failed }}</td></tr>
+                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Skipped ⏭️</b></td>
+                      <td style="padding: 8px; border: 1px solid #ddd;">${{ steps.test-results.outputs.skipped }}</td></tr>
+                </table>
+                <p><a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">
+                  View Full Run on GitHub Actions →
+                </a></p>
+                <p style="color: #666; font-size: 12px;">
+                  XYZ Bank Selenium CI | Powered by GitHub Actions + Allure
+                </p>
+              </body>
+              </html>
