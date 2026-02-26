@@ -7,11 +7,21 @@ on:
     branches: [main,  base, feature/pages, utils]
 
 jobs:
-  test:
+  selenium-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java-version: [21]
+
+        # Expose outputs so the notify job can read them
+    outputs:
+      test_status: ${{ steps.set-status.outputs.status }}
+      tests_total: ${{ steps.test-results.outputs.total }}
+      tests_passed: ${{ steps.test-results.outputs.passed }}
+      tests_failed: ${{ steps.test-results.outputs.failed }}
+      tests_skipped: ${{ steps.test-results.outputs.skipped }}
+      passed_tests: ${{ steps.parse-names.outputs.passed_names }}
+      failed_tests: ${{ steps.parse-names.outputs.failed_names }}
 
     steps:
       - uses: actions/checkout@v4
@@ -49,6 +59,17 @@ jobs:
           name: allure-results
           path: target/allure-results/
 
+      - name: Set job status output
+        id: set-status
+        run: |
+            if [ "${{ steps.run-tests.outcome }}" = "success" ]; then
+              echo "status=success" >> $GITHUB_OUTPUT
+            else
+              echo "status=failure" >> $GITHUB_OUTPUT
+            fi
+          
+          
+
       - name: 📋 Parse Test Results
         if: always()
         id: test-results
@@ -58,81 +79,73 @@ jobs:
             comment_mode: always    # post comment on PR with results
             check_name: "🧪 Selenium Test Results"
 
-      - name: 📣 Notify Slack
-        if: always()   # notify even on failure so team is alerted
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-            payload: |
-              {
-              "text": "${{ job.status == 'success' && '✅' || '❌' }} *XYZ Bank Selenium* — Run #${{ github.run_number }}",
-                "blocks": [
-                  {
-                    "type": "header",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "${{ job.status == 'success' && '✅ Tests Passed' || '❌ Tests FAILED' }} — XYZ Bank Selenium"
-                    }
-                  },
-                  {
-                    "type": "section",
-                    "fields": [
-                      { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
-                      { "type": "mrkdwn", "text": "*Triggered by:*\n`${{ github.actor }}`" },
-                      { "type": "mrkdwn", "text": "*Run:*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>" },
-                      { "type": "mrkdwn", "text": "*Allure Report:*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Download Artifact>" }
-                    ]
-                  },
-                  {
-                    "type": "section",
-                    "text": {
-                      "type": "mrkdwn",
-                      "text": "*Tests:* ${{ steps.test-results.outputs.passed }} passed ✅ | ${{ steps.test-results.outputs.failed }} failed ❌ | ${{ steps.test-results.outputs.skipped }} skipped ⏭️"
-                    }
-                  }
-                ]
-              }
-        env:
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-            SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-
-      - name: 📧 Send Email Notification
+      - name: 🔎 Parse individual test names
         if: always()
-        uses: dawidd6/action-send-mail@v3
+        id: parse-names
+        run: |
+            PASSED=""
+            FAILED=""
+            
+            for xml in target/surefire-reports/TEST-*.xml; do
+              [ -f "$xml" ] || continue
+            
+              # Extract class name from filename: TEST-com.xyzbank.tests.ManagerTests.xml
+              CLASS=$(basename "$xml" .xml | sed 's/^TEST-//')
+            
+              # Passed = testcase elements with NO failure/error child
+              while IFS= read -r name; do
+                PASSED="${PASSED}${CLASS}#${name}\n"
+              done < <(
+                xmllint --xpath \
+                  "//testcase[not(failure) and not(error)]/@name" \
+                  "$xml" 2>/dev/null \
+                | grep -oP 'name="\K[^"]+'
+              )
+            
+              # Failed = testcase elements WITH a failure/error child
+              while IFS= read -r name; do
+                FAILED="${FAILED}${CLASS}#${name}\n"
+              done < <(
+                xmllint --xpath \
+                  "//testcase[failure or error]/@name" \
+                  "$xml" 2>/dev/null \
+                | grep -oP 'name="\K[^"]+'
+              )
+            done
+            
+            # Write to GITHUB_OUTPUT (multiline safe encoding)
+            {
+              echo "passed_names<<EOF"
+              printf "%b" "$PASSED"
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
+            
+            {
+              echo "failed_names<<EOF"
+              printf "%b" "$FAILED"
+              echo "EOF"
+            } >> $GITHUB_OUTPUT
+
+      #  Fail the job NOW if tests failed (after all reporting steps ran)
+      - name: 🚦 Propagate test failure
+        if: steps.run-tests.outcome == 'failure'
+        run: exit 1
+            
+
+  notify:
+        name: 📣 Slack Notification
+        needs: selenium-test     # runs after Job 1 finishes
+        if: always()               # runs even when selenium-tests job fails
+        uses: ./.github/workflows/slack-notification.yml   # path to your reusable file
         with:
-           server_address: smtp.gmail.com
-           server_port: 587
-           secure: false           # STARTTLS on port 587
-           username: ${{ secrets.EMAIL_USERNAME }}
-           password: ${{ secrets.EMAIL_PASSWORD }}   # Gmail App Password (not account password)
-           subject: |
-              ${{ job.status == 'success' && '✅' || '❌' }} XYZ Bank Selenium — Run #${{ github.run_number }} (${{ github.ref_name }})
-            to: ${{ secrets.EMAIL_TO }}
-            from: XYZ Bank CI <${{ secrets.EMAIL_USERNAME }}>
-            html_body: |
-              <html>
-              <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: ${{ job.status == 'success' && '#28a745' || '#dc3545' }};">
-                  ${{ job.status == 'success' && '✅ Tests Passed' || '❌ Tests FAILED' }}
-                </h2>
-                <table style="border-collapse: collapse; width: 100%;">
-                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Branch</b></td>
-                      <td style="padding: 8px; border: 1px solid #ddd;">${{ github.ref_name }}</td></tr>
-                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Triggered by</b></td>
-                      <td style="padding: 8px; border: 1px solid #ddd;">${{ github.actor }}</td></tr>
-                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Run Number</b></td>
-                      <td style="padding: 8px; border: 1px solid #ddd;">#${{ github.run_number }}</td></tr>
-                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Passed ✅</b></td>
-                      <td style="padding: 8px; border: 1px solid #ddd;">${{ steps.test-results.outputs.passed }}</td></tr>
-                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Failed ❌</b></td>
-                      <td style="padding: 8px; border: 1px solid #ddd;">${{ steps.test-results.outputs.failed }}</td></tr>
-                  <tr><td style="padding: 8px; border: 1px solid #ddd;"><b>Skipped ⏭️</b></td>
-                      <td style="padding: 8px; border: 1px solid #ddd;">${{ steps.test-results.outputs.skipped }}</td></tr>
-                </table>
-                <p><a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">
-                  View Full Run on GitHub Actions →
-                </a></p>
-                <p style="color: #666; font-size: 12px;">
-                  XYZ Bank Selenium CI | Powered by GitHub Actions + Allure
-                </p>
-              </body>
-              </html>
+          status: ${{ needs.selenium-tests.outputs.test_status }}
+          tests_total: ${{ needs.selenium-tests.outputs.tests_total }}
+          tests_passed: ${{ needs.selenium-tests.outputs.tests_passed }}
+          tests_failed: ${{ needs.selenium-tests.outputs.tests_failed }}
+          tests_skipped: ${{ needs.selenium-tests.outputs.tests_skipped }}
+          passed_tests: ${{ needs.selenium-tests.outputs.passed_tests }}
+          failed_tests: ${{ needs.selenium-tests.outputs.failed_tests }}
+        secrets:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+
