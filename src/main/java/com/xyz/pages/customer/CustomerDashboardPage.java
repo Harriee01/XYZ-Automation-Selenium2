@@ -3,11 +3,15 @@ package com.xyz.pages.customer;
 import com.xyz.utils.PageInitializer;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import io.qameta.allure.Step;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //Page Object for Customer Dashboard.
 // * Shows account overview and navigation to transactions/deposit/withdraw
@@ -27,10 +31,10 @@ public class CustomerDashboardPage {
     @FindBy(id = "accountSelect")
     private WebElement accountSelect;
 
-    // Balance display
-    // Converted from CSS :nth-child(2) to XPath for explicit targeting
-    @FindBy(xpath = "//span[contains(@class, 'ng-binding')][position()=2]")
-    private WebElement balanceDisplay;
+    private static final By ACCOUNT_SUMMARY_CONTAINER =
+            By.xpath("//div[contains(@class,'center')][.//select[@id='accountSelect']]");
+    private static final Pattern BALANCE_PATTERN =
+            Pattern.compile("Balance\\s*:\\s*([0-9]+(?:\\.[0-9]+)?)");
 
     // Transactions button
     // Converted from CSS to XPath for better AngularJS element matching
@@ -72,12 +76,16 @@ public class CustomerDashboardPage {
      */
     @Step("Get current balance")
     public double getBalanceAsDouble() {
-        wait.until(d -> balanceDisplay.isDisplayed());
-        // Balance text might have currency symbol, extract number
-        String balanceText = balanceDisplay.getText().replaceAll("[^0-9.-]", "");
-        double balance = Double.parseDouble(balanceText);
+        wait.until(d -> accountSelect.isDisplayed());
+        WebElement summary = wait.until(d -> d.findElement(ACCOUNT_SUMMARY_CONTAINER));
+        String summaryText = summary.getText();
 
-        return balance;
+        Matcher matcher = BALANCE_PATTERN.matcher(summaryText);
+        if (!matcher.find()) {
+            throw new org.openqa.selenium.NoSuchElementException(
+                    "Could not parse Balance from account summary text: " + summaryText);
+        }
+        return Double.parseDouble(matcher.group(1));
     }
 
     /**
@@ -127,9 +135,8 @@ public class CustomerDashboardPage {
         org.openqa.selenium.support.ui.Select select =
                 new org.openqa.selenium.support.ui.Select(accountSelect);
         select.selectByIndex(index);
-
-        // Wait for balance to update after account change
-        wait.until(d -> !balanceDisplay.getText().isEmpty());
+        // Ensure the account summary is visible after the account switch
+        wait.until(d -> d.findElement(ACCOUNT_SUMMARY_CONTAINER).isDisplayed());
     }
 
     /**

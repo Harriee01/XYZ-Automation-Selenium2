@@ -30,7 +30,7 @@ public abstract class BaseTest {
         driver.get(TestData.BASE_URL);
     }
 
-    //uns AFTER each @Test method — even if the test throws an exception
+    //runs AFTER each @Test method — even if the test throws an exception
 
     @AfterEach
     void tearDown() {

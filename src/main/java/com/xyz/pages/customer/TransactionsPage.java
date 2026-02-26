@@ -172,12 +172,28 @@ public class TransactionsPage {
      */
     public java.util.List<String> getTableHeaders() {
         wait.until(d -> transactionsTable.isDisplayed());
-        // Get header row (first tr)
-        WebElement headerRow = transactionsTable.findElement(By.tagName("thead"));
-        List<WebElement> headers = headerRow.findElements(By.tagName("th"));
-        return headers.stream()
-                .map(WebElement::getText)
-                .collect(Collectors.toList());
+        // The demo app renders headers as <td> inside <thead> (not <th>), so collect both.
+        try {
+            WebElement thead = transactionsTable.findElement(By.tagName("thead"));
+            List<WebElement> headerCells = thead.findElements(By.cssSelector("tr th, tr td"));
+            return headerCells.stream()
+                    .map(WebElement::getText)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        } catch (Exception ignored) {
+            // Fallback: if <thead> is missing, use the first row's cells as "headers"
+            List<WebElement> rows = transactionsTable.findElements(By.tagName("tr"));
+            if (rows.isEmpty()) {
+                return List.of();
+            }
+            List<WebElement> cells = rows.get(0).findElements(By.cssSelector("th, td"));
+            return cells.stream()
+                    .map(WebElement::getText)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
