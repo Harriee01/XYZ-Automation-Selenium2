@@ -79,3 +79,97 @@ allure serve target/allure-results
 allure generate target/allure-results --clean -o target/allure-report
 open target/allure-report/index.html   # macOS
 xdg-open target/allure-report/index.html  # Linux
+
+```
+
+## 🔄 GitHub Actions CI/CD
+
+The pipeline (`.github/workflows/ci.yml`) runs on every push to `main`/`develop` and every PR.
+
+**Pipeline stages:**
+1. **Checkout** — full git history (Allure trend charts need it)
+2. **JDK 21 setup** — Eclipse Temurin
+3. **Maven cache** — keyed on `pom.xml` hash (fast rebuilds)
+4. **Chrome stable** — via `browser-actions/setup-chrome`
+5. **`mvn test -Dheadless=true`** — runs all 16 tests
+6. **Allure report generation** — HTML report created
+7. **Artifact upload** — report downloadable for 30 days
+8. **Test result summary** — posted as PR comment
+9. **Slack notification** — rich formatted message with pass/fail counts
+10. **Email notification** — HTML email to configured recipients
+
+### Required GitHub Secrets
+
+Navigate to: **Repo > Settings > Secrets and Variables > Actions**
+
+| Secret | Description |
+|---|---|
+| `SLACK_WEBHOOK_URL` | Slack Incoming Webhook URL (from Slack App configuration) |
+| `EMAIL_USERNAME` | Gmail address for sending CI notifications |
+| `EMAIL_PASSWORD` | Gmail App Password (not your account password) |
+| `EMAIL_TO` | Recipient email(s), comma-separated |
+
+> **How to create a Gmail App Password:**  
+> Google Account → Security → 2-Step Verification → App Passwords → Create
+
+---
+
+## 🏗️ Project Structure
+
+```
+src/
+├── main/
+│   └── java/
+│       └── com/
+│           └── xyzbank/
+│               ├── pages/
+│               │   ├── customer/
+│               │   │   ├──CustomerDashboardPage.java
+│               │   │   ├── CustomerSelectPage.java
+│               │   │   ├── DepositPage.java
+│               │   │   ├──TransactionsPage.java
+│               │   │   └── WithdrawPage.java
+│               │   ├── manager/
+│               │   │   ├── AddCustomerPage.java
+│               │   │   ├──CustomersPage.java
+│               │   │   ├──ManagerHomePage.java
+│               │   │   └──OpenAccountPage.java
+                │   └──      HomeLoginPage.java
+│               ├── utils/
+│               │   ├── WaitUtils.java
+│               │   ├── AlertHandler.java
+│               │   └── ConfigLoader.java
+│               └── models/
+│                   └── TestData.java
+└── test/
+└── java/
+└── com/
+└── xyzbank/
+├── base/
+│   ├── BaseTest.java
+│   └── AllureLogger.java
+├── tests/
+│   ├── manager/
+│   │   ├── ManagerTests.java
+│   │   ├── AddCustomerValidTest.java
+│   │   ├── AddCustomerInvalidFirstNameNumericTest.java
+│   │   ├── AddCustomerInvalidFirstNameSpecialTest.java
+│   │   ├── AddCustomerInvalidPostCodeTest.java
+│   │   ├── CustomerAppearsInListTest.java
+│   │   ├── CreateDollarAccountTest.java
+│   │   ├── PreventAccountForNonExistentCustomerTest.java
+│   │   └── PreventAccountEmptyCurrencyTest.java
+│   └── customer/
+│       ├── CustomerTests.java
+│       ├── ViewTransactionHistoryTest.java
+│       ├── RejectZeroDepositTest.java
+│       ├── RejectNegativeDepositTest.java
+│       ├── ValidDepositAppearsImmediatelyTest.java
+│       ├── TransactionHistoryReadOnlyTest.java
+│       ├── Deposit100VerificationTest.java
+│       ├── Withdraw50VerificationTest.java
+│       └── RejectZeroWithdrawalTest.java
+└── utils/
+└── TableAssertions.java
+```
+
